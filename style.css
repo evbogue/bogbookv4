@@ -1,0 +1,148 @@
+body {
+  background: #fafafa;
+  font-family: "Source Sans Pro", sans-serif;
+}
+
+div { margin: 0;}
+
+p {
+  margin: 0;
+  word-wrap: break-word;
+  padding-top: .5ex;
+  padding-bottom: .5ex;
+}
+
+button {
+  font-size: .85em;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: .25em .5em .25em .5em;
+}
+
+button:hover {
+  background: #ddd;
+  cursor: pointer;
+}
+
+textarea, input {
+  font-size: 1em;
+  font-family: "Source Sans Pro", sans-serif;
+  border: 1px solid #efefef;
+  border-radius: 5px;
+  margin-bottom: .5em;
+  background: #fafafa;
+}
+
+textarea {
+  height: 80px;
+}
+
+a {
+  color: #007aa5;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code {
+  color: #777;
+}
+
+code a {
+  color: #999;
+}
+
+img {
+  border-radius: 5px;
+}
+
+.message {
+  padding: .75em;
+  background: white;
+  border: 1px solid #efefef;
+  margin-top: 7px;
+  border-radius: 7px;
+}
+
+.message, .message > * {
+  animation: fadein .5s;
+}
+
+#navbar {
+  padding-left: 1em;
+  position: fixed;
+  width: 100%;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background: white;
+  border-bottom: 1px solid #efefef;
+}
+
+#editbar {
+  position: fixed;
+  width: 100%;
+  z-index: 1;
+  top: 0; right; 0; left: 0; bottom: 0;
+  padding-left: 1em; padding-top: 1em;
+  background: white;
+}
+
+#scroller { 
+  margin-top: 35px;
+  margin-left: auto;
+  width: 780px;
+  max-width: 100%;
+  margin-right: auto;
+}
+
+@media only screen and (max-width: 680px) {
+  #scroller { margin-top: 35px; }
+ 
+  textarea {
+    height: 150px;
+  }
+}
+
+.indent {
+  margin-left: 2em;
+}
+
+pre, code {
+  overflow: auto;
+  word-break: break-all;
+  word-wrap: break-word;
+  white-space: pre;
+  white-space: -moz-pre-wrap;
+  white-space: pre-wrap;
+  white-space: pre\9;
+}
+
+hr { display: block; height: 1px;
+    border: 0; border-top: 1px solid #efefef;
+    margin: 1em 0; padding: 0; }
+
+@keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+textarea {
+  width: 100%;
+}
+
+.avatar {
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+  object-fit: cover;
+}
+
+.thumb { 
+  width: 100%;
+  max-width: 100%; 
+}
+
+.right { float: right;}
