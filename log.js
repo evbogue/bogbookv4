@@ -1,5 +1,6 @@
 import { open } from './sbog.js'
 import { cachekv } from './lib/cachekv.js'
+import { find } from './blob.js'
 
 export const awaitLog = async () => {
   const logs = await cachekv.get('log')
@@ -32,7 +33,12 @@ cachekv.get('log').then(file => {
     newset.forEach(msg => {
       open(msg).then(opened => {
         if (opened) {
-          newarray.push(opened)
+          find(opened.data).then(found => {
+            opened.txt = found
+            console.log(found)
+            console.log(opened)
+            newarray.push(opened)
+          })
         }
       })
     })
@@ -73,8 +79,9 @@ export const logs = function logs (query) {
     },
     query: async function (query) {
       if (arraystore[0]) {
+        console.log(arraystore)
         if (query.startsWith('?')) {
-          const querylog = arraystore.filter(msg => msg.text && msg.text.includes(query.substring(1)))
+          const querylog = arraystore.filter(msg => msg.txt && msg.txt.includes(query.substring(1)))
           return querylog 
         } else {
           const querylog = arraystore.filter(msg => msg.author == query || msg.hash == query)

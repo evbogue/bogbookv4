@@ -2,6 +2,7 @@ import { h } from './lib/h.js'
 import { composer } from './composer.js'
 import { logs } from './log.js' 
 import { adder } from './adder.js'
+import { gossip }  from './gossip.js'
 
 export const route = async (container) => {
   const screen = h('div', {id: 'screen'})
@@ -22,7 +23,9 @@ export const route = async (container) => {
     screen.appendChild(home)
     const query = await logs.query(src)
     if (query.length) {
-    adder(query, src, scroller)
+      adder(query, src, scroller)
+    } else if (src.length === 44) {
+      gossip(src)
     }
   }
 

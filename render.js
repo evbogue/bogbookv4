@@ -2,6 +2,7 @@ import { h } from './lib/h.js'
 import { human } from './lib/human.js'
 import { avatar } from './avatar.js'
 import { find } from './blob.js'
+import { markdown } from './markdown.js'
 
 export const render = async (m) => {
   const pubkey = await avatar(m.author)
@@ -9,9 +10,9 @@ export const render = async (m) => {
 
   const content = h('div', {id: m.data})
 
-  if (m.text) { content.textContent = m.text}
+  if (m.text) { content.innerHTML = await markdown(m.text)}
 
-  if (blob) { content.textContent = blob }
+  if (blob) { content.innerHTML = await markdown(blob) }
 
   const ts = h('a', {href: '#' + m.hash }, [human(new Date(m.timestamp))])
 
