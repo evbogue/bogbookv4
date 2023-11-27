@@ -3,6 +3,7 @@ import { human } from './lib/human.js'
 import { avatar } from './avatar.js'
 import { find } from './blob.js'
 import { markdown } from './markdown.js'
+import { composer } from './composer.js'
 
 export const render = async (m) => {
   const pubkey = await avatar(m.author)
@@ -46,13 +47,22 @@ export const render = async (m) => {
     ts
   ])
 
+  const reply = h('button', {
+    onclick: async () => {
+      div.parentNode.appendChild(await composer(m))
+    }
+  }, ['Reply'])
+
   const div = h('div', {id: m.hash, classList: 'message'}, [
     right, 
     pubkey,
     ' ', 
     content,
-    raw
+    raw,
+    reply
   ])
 
-  return div
+  const msgDiv = h('div', [div])
+
+  return msgDiv
 }

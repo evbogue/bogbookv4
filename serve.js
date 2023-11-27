@@ -56,6 +56,6 @@ Deno.serve((r) => {
     socket.onclose = _ => sockets.delete(socket)
     return response
   } catch {
-    return serveDir(r)
+    return serveDir(r, {quiet: 'True'})
   }
 })

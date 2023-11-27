@@ -7,56 +7,80 @@ import { box } from './sbox.js'
 import { cachekv } from './lib/cachekv.js'
 import { avatar } from './avatar.js'
 import { logs } from './log.js' 
+import { markdown } from './markdown.js'
+import { render } from './render.js'
 
 const pubkey = await ed25519.pubkey()
 
 const id = await avatar(pubkey)
 
-const textarea = h('textarea', {placeholder: 'Write a message', style: 'width: 98%;'})
+export const composer = async (msg) => {
 
-const button = h('button', {
-  onclick: async () => {
-    const getPrevious = await cachekv.get(pubkey)
+  const getPrevious = await cachekv.get(pubkey)
 
-    let previous
+  let previous
 
-    if (!getPrevious) { previous = {} }
+  if (!getPrevious) { previous = {} }
 
-    if (getPrevious) {
-      previous = JSON.parse(getPrevious)
-    }
-
-    let previousHash
-    if (previous && previous.msg) {
-      previousHash = previous.msg.hash
-    } 
-    const signed = await publish(textarea.value, previousHash)  
-    const opened = await open(signed)
-    const blob = await find(opened.data)
-    const obj = {
-      type: 'post',
-      latest: true,
-      payload: signed,
-      blob
-    }
-    if (previous && previous.name) {
-      obj.name = previous.name
-    }
-    logs.add(signed)      
-    gossip(JSON.stringify(obj))
-    previous.msg = opened
-    cachekv.put(pubkey, JSON.stringify(previous))  
-    textarea.value = ''
-    
+  if (getPrevious) {
+    previous = JSON.parse(getPrevious)
   }
-}, ['Send'])
 
-const composeDiv = h('div', {classList: 'message'}, [
-  id,
-  textarea,
-  h('br'),
-  button,
-])
+  let previousHash
+  if (previous && previous.msg) {
+    previousHash = previous.msg.hash
+  }
 
-export const composer = h('div', [composeDiv])
 
+  const select = window.getSelection().toString()
+
+  const re = h('div')
+
+  let context
+
+  if (msg) {
+    const getReplyPrevious = JSON.parse(await cachekv.get(msg.author))
+    console.log(getReplyPrevious)
+    context = '[' + (getReplyPrevious.name || msg.author.substring(0, 7)) + '](' + msg.author + ') ↳ [' + (select || msg.hash.substring(0, 7)) + '](' + msg.hash + ') '
+    re.innerHTML = await markdown(context)
+  }
+
+  const textarea = h('textarea', {placeholder: 'Write a message', style: 'width: 98%;'})
+
+  const button = h('button', {
+    onclick: async () => {
+      const signed = await publish(context + '\n\n' + textarea.value, previousHash)  
+      const opened = await open(signed)
+      const blob = await find(opened.data)
+      const obj = {
+        type: 'post',
+        latest: true,
+        payload: signed,
+        blob
+      }
+      if (previous && previous.name) {
+        obj.name = previous.name
+      }
+      logs.add(signed)      
+      gossip(JSON.stringify(obj))
+      previous.msg = opened
+      cachekv.put(pubkey, JSON.stringify(previous))
+      opened.text = blob
+      const rendered = await render(opened)
+      textarea.value = ''
+      if (msg) {
+        composeDiv.replaceWith(rendered)
+      } 
+    }
+  }, ['Send'])
+  
+  const composeDiv = h('div', {classList: 'message'}, [
+    id,
+    re,
+    textarea,
+    h('br'),
+    button,
+  ])
+
+  return composeDiv
+}

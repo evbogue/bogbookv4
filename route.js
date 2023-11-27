@@ -3,6 +3,8 @@ import { composer } from './composer.js'
 import { logs } from './log.js' 
 import { adder } from './adder.js'
 import { gossip }  from './gossip.js'
+import { navbar } from './navbar.js'
+import { settings } from './settings.js'
 
 export const route = async (container) => {
   const screen = h('div', {id: 'screen'})
@@ -13,14 +15,15 @@ export const route = async (container) => {
 
   const src = window.location.hash.substring(1)
 
-  const home = h('a', {href: '#', style: 'position: absolute; top: .25em; left: .25em;'}, ['🏡'])
+  screen.appendChild(navbar)
 
   if (src === '') {
-    scroller.appendChild(composer)
+    scroller.appendChild(await composer())
     const log = await logs.getLog()
     adder(log, src, scroller)
+  } if (src === 'settings') {
+    scroller.appendChild(settings)
   } else {
-    screen.appendChild(home)
     const query = await logs.query(src)
     if (query.length) {
       adder(query, src, scroller)
