@@ -36,7 +36,7 @@ export const composer = async (msg) => {
 
   const re = h('div')
 
-  let context
+  let context = ''
 
   if (msg) {
     const getReplyPrevious = JSON.parse(await cachekv.get(msg.author))
@@ -49,7 +49,13 @@ export const composer = async (msg) => {
 
   const button = h('button', {
     onclick: async () => {
-      const signed = await publish(context + '\n\n' + textarea.value, previousHash)  
+      let content
+      if (context) {
+        content = context + '\n\n' + textarea.value
+      } else {
+        content = textarea.value
+      }
+      const signed = await publish(content, previousHash)  
       const opened = await open(signed)
       const blob = await find(opened.data)
       const obj = {
