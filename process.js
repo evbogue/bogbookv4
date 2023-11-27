@@ -5,6 +5,7 @@ import { make } from './blob.js'
 import { render } from './render.js'
 import { cachekv } from './lib/cachekv.js'
 import { logs } from './log.js'
+import { markdown } from './markdown.js'
 
 export const process = async (m) => {
   const scroller = document.getElementById('scroller')
@@ -12,7 +13,7 @@ export const process = async (m) => {
   if (msg.type === 'blob') {
     const hash = await make(msg.payload)
     const blobDiv = document.getElementById(hash)
-    if (blobDiv) { blobDiv.textContent = msg.payload}
+    if (blobDiv) { blobDiv.innerHTML = await markdown(msg.payload)}
   }
   if (msg.type === 'post') {
         

@@ -25,7 +25,7 @@ export const route = async (container) => {
     scroller.appendChild(settings)
   } else {
     const query = await logs.query(src)
-    if (query.length) {
+    if (query && query.length) {
       adder(query, src, scroller)
     } else if (src.length === 44) {
       gossip(src)

@@ -11,9 +11,9 @@ export const render = async (m) => {
 
   const content = h('div', {id: m.data})
 
-  if (m.text) { content.innerHTML = await markdown(m.text)}
-
   if (blob) { content.innerHTML = await markdown(blob) }
+
+  if (m.text) { content.innerHTML = await markdown(m.text)}
 
   const ts = h('a', {href: '#' + m.hash }, [human(new Date(m.timestamp))])
 

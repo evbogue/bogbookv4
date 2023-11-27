@@ -21,14 +21,16 @@ channel.onmessage = async e => {
       kv.set([opened.data], msg.boxed)
     }
     if (msg.latest) {
-      kv.set([opened.author], opened.raw)
+      kv.set([opened.author], msg)
     }
     sockets.forEach(s => s.send(e.data))
   } 
   if (e.data.length === 44) {
     const msg = await kv.get([e.data])
-    console.log(msg)
-    if (msg.value) {
+    console.log(msg.value)
+    if (msg.value && msg.value.latest) {
+      sockets.forEach(s => s.send(JSON.stringify(msg.value)))
+    } else if (msg.value) {
       try {
         const opened = await open(msg.value)
         const blob = await kv.get([opened.data])

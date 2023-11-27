@@ -35,7 +35,15 @@ const saveButton = h('button', {
   }
 }, ['Save'])
 
-const deleteEverything = h('button', {style: 'float: right;'}, ['Delete Everything'])
+const deleteEverything = h('button', {
+  style: 'float: right;',
+  onclick: async () => {
+    await cachekv.clear()
+    await ed25519.deletekey() 
+    location.href = '#'
+    location.reload()
+  }
+}, ['Delete Everything'])
 
 export const settings = h('div', {classList: 'message'}, [
   'Name: ', 
