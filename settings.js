@@ -22,7 +22,7 @@ const textarea = h('textarea', [keypair])
 const saveButton = h('button', {
   onclick: async () => {
     if (textarea.value && textarea.value.length === keypair.length) {
-      
+      await localStorage.setItem('keypair', textarea.value)      
     } else { 
       alert('Invalid Keypair')
     }
