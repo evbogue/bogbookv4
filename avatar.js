@@ -13,8 +13,6 @@ const avatarImg = async (pubkey) => {
 }
 
 const avatarName = async (pubkey) => {
-  const mykey = await ed25519.pubkey()
-
   const name = h('a', {href: '#' + pubkey}, [pubkey.substring(0, 7) + '...'])
 
   const getPrevious = await cachekv.get(pubkey)
