@@ -13,9 +13,8 @@ ed25519.keypair = async () => {
   const keypair = await localStorage.getItem('keypair')
   if (!keypair) {
     const keypair = await generate()
-    localStorage.setItem('keypair', keypair)
-    location.reload()
-    //return keypair
+    await localStorage.setItem('keypair', keypair)
+    return keypair
   } else {
     return keypair
   }
