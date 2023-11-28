@@ -5,7 +5,6 @@ import { ed25519 } from './keys.js'
 
 const log = await awaitLog()
 const key = await ed25519.pubkey()
-console.log(log)
 
 const server = (window.location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host
 
