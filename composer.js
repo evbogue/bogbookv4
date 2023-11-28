@@ -3,7 +3,6 @@ import { gossip } from './gossip.js'
 import { ed25519 } from './keys.js'
 import { publish, open } from './sbog.js' 
 import { find } from './blob.js'
-import { box } from './sbox.js'
 import { cachekv } from './lib/cachekv.js'
 import { avatar } from './avatar.js'
 import { logs } from './log.js' 
@@ -31,7 +30,6 @@ export const composer = async (msg) => {
     previousHash = previous.msg.hash
   }
 
-
   const select = window.getSelection().toString()
 
   const re = h('div')
@@ -40,12 +38,33 @@ export const composer = async (msg) => {
 
   if (msg) {
     const getReplyPrevious = JSON.parse(await cachekv.get(msg.author))
-    console.log(getReplyPrevious)
     context = '[' + (getReplyPrevious.name || msg.author.substring(0, 7)) + '](' + msg.author + ') ↳ [' + (select || msg.hash.substring(0, 7)) + '](' + msg.hash + ') '
     re.innerHTML = await markdown(context)
   }
 
+  if (!msg) { msg = {hash: 'home'}}
+
+  const preview = h('div', [h('p', [' '])])
+
   const textarea = h('textarea', {placeholder: 'Write a message', style: 'width: 98%;'})
+
+  textarea.addEventListener('input', async () => {
+    if (textarea.value) {
+      cachekv.put('draft:' + msg.hash, textarea.value)
+      
+    } else {
+      cachekv.rm('draft:' + msg.hash)
+    }
+    preview.innerHTML = await markdown(textarea.value)
+  })
+
+  const got = await cachekv.get('draft:' + msg.hash)
+
+  if (got) {
+    console.log(got)
+    textarea.value = got
+    preview.innerHTML = await markdown(textarea.value)
+  }
 
   const button = h('button', {
     onclick: async () => {
@@ -82,6 +101,7 @@ export const composer = async (msg) => {
   
   const composeDiv = h('div', {classList: 'message'}, [
     id,
+    preview,
     re,
     textarea,
     h('br'),
