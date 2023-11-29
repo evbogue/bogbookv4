@@ -1,12 +1,21 @@
+import { open } from './sbog.js'
 
 const server = 'wss://bogbook.com/'
-
 
 const connect = (s) => {
   const ws = new WebSocket(s)
 
   ws.onmessage = async (e) => {
-    console.log(e.data)
+    const parse = JSON.parse(e.data)
+    if (parse.latest) {
+      const opened = await open(parse.payload)
+      const content = 'https://bogbook.com/#' + opened.hash + ' | ' + (parse.name + ' ' || ' ') + opened.author 
+      console.log(content)
+      fetch('https://ntfy.sh/bogbook', {
+        method: 'POST',
+        body: content 
+      })
+    }    
   }
 
   ws.onclose = (e) => {
