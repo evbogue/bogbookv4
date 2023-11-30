@@ -93,7 +93,9 @@ export const composer = async (msg) => {
       opened.text = blob
       const rendered = await render(opened)
       textarea.value = ''
-      if (msg) {
+      cachekv.rm('draft:' + msg.hash)
+      preview.textContent = ''
+      if (msg && msg.hash != 'home') {
         composeDiv.replaceWith(rendered)
       } 
     }
