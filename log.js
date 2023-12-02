@@ -30,15 +30,13 @@ cachekv.get('log').then(file => {
     log = JSON.parse(file)
     const newset = new Set(log)
     const newarray = []
-    newset.forEach(msg => {
-      open(msg).then(opened => {
-        if (opened) {
-          find(opened.data).then(found => {
-            opened.txt = found
-            newarray.push(opened)
-          })
-        }
-      })
+    newset.forEach(async (msg) => {
+      const opened = await open(msg)
+      if (opened) {
+        const found = await find(opened.data)
+        opened.txt = found
+        newarray.push(opened)
+      }
     })
 
     setTimeout(function () {
@@ -93,9 +91,12 @@ export const logs = function logs (query) {
       }  
     }, 
     add: function (msg) {
-      open(msg).then(opened => {
+      open(msg).then(async (opened) => {
         const dupe = arraystore.filter(message => message.hash === opened.hash)
         if (opened && !dupe[0]) {
+          const opened = await open(msg)
+          const found = await find(opened.data)
+          opened.txt = found
           log.push(msg)
           arraystore.push(opened)
           newData = true
