@@ -4,6 +4,7 @@ import { avatar } from './avatar.js'
 import { find } from './blob.js'
 import { markdown } from './markdown.js'
 import { composer } from './composer.js'
+import { logs } from './log.js' 
 
 export const render = async (m) => {
   const pubkey = await avatar(m.author)
@@ -49,7 +50,11 @@ export const render = async (m) => {
 
   const reply = h('button', {
     onclick: async () => {
-      div.parentNode.appendChild(await composer(m))
+      if (replyDiv.firstChild) {
+        replyDiv.insertBefore(await composer(m), replyDiv.firstChild)
+      } else {
+        replyDiv.appendChild(await composer(m))
+      }
     }
   }, ['Reply'])
 
@@ -63,6 +68,23 @@ export const render = async (m) => {
   ])
 
   const msgDiv = h('div', [div])
+
+  const replyDiv = h('div', {classList: 'indent'})
+
+  msgDiv.appendChild(replyDiv)
+
+  const threads = await logs.query('?' + m.hash)
+
+  if (threads[0]) {
+    console.log(threads)
+    threads.forEach(async (item) => {
+      const getMsg = document.getElementById(item.hash)
+      if (!getMsg) {
+        const rendered = await render(item)
+        replyDiv.appendChild(rendered)
+      }
+    })
+  }
 
   return msgDiv
 }
