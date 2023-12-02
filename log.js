@@ -35,8 +35,6 @@ cachekv.get('log').then(file => {
         if (opened) {
           find(opened.data).then(found => {
             opened.txt = found
-            console.log(found)
-            console.log(opened)
             newarray.push(opened)
           })
         }
@@ -79,7 +77,6 @@ export const logs = function logs (query) {
     },
     query: async function (query) {
       if (arraystore[0]) {
-        console.log(arraystore)
         if (query.startsWith('?')) {
           const querylog = arraystore.filter(msg => msg.txt && msg.txt.includes(query.substring(1)))
           return querylog 
