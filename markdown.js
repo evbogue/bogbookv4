@@ -35,7 +35,7 @@ renderer.paragraph = function (paragraph) {
 
 renderer.link = function (href, title, text) {
   if (href.length == 44 && !href.startsWith('http')) {
-    const hashhref  = '#' + href
+    href  = '#' + href
     return marked.Renderer.prototype.link.call(this, href, title, text);
   } else {
     return marked.Renderer.prototype.link.call(this, href, title, text);
