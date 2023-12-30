@@ -35,6 +35,15 @@ const saveButton = h('button', {
   }
 }, ['Save'])
 
+const deleteKeypair = h('button', {
+  style: 'float: right;',
+  onclick: async () => {
+    await ed25519.deletekey()
+    location.href = '#'
+    location.reload()
+  }
+}, ['Delete Keypair'])
+
 const deleteEverything = h('button', {
   style: 'float: right;',
   onclick: async () => {
@@ -53,6 +62,7 @@ export const settings = h('div', {classList: 'message'}, [
   h('br'),
   textarea,
   h('br'),
+  deleteKeypair,
   deleteEverything,
   saveButton
 ])
