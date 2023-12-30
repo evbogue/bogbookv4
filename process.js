@@ -44,8 +44,6 @@ export const process = async (m) => {
  
     const shouldWeRender = window.location.hash === '' || opened.hash || opened.author
 
-    console.log(shouldWeRender)    
-
     if (!scroller.firstChild && shouldWeRender || shouldWeRender && !msg.latest) {
       scroller.appendChild(rendered)
     } else if (!alreadyRendered && shouldWeRender && msg.latest) {
@@ -53,8 +51,6 @@ export const process = async (m) => {
     }
 
     const previous = await logs.get(opened.previous)
-
-    console.log(previous)
 
     if (!previous) { gossip(opened.previous)}
   }
