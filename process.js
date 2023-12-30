@@ -6,6 +6,7 @@ import { render } from './render.js'
 import { cachekv } from './lib/cachekv.js'
 import { logs } from './log.js'
 import { markdown } from './markdown.js'
+import { gossip } from './gossip.js'
 
 export const process = async (m) => {
   const scroller = document.getElementById('scroller')
@@ -38,11 +39,23 @@ export const process = async (m) => {
     const rendered = await render(opened)
 
     const alreadyRendered = document.getElementById(opened.hash)
-    
-    if (!scroller.firstChild && !alreadyRendered) {
+
+    const src = window.location.hash
+ 
+    const shouldWeRender = window.location.hash === '' || opened.hash || opened.author
+
+    console.log(shouldWeRender)    
+
+    if (!scroller.firstChild && shouldWeRender || shouldWeRender && !msg.latest) {
       scroller.appendChild(rendered)
-    } else if (!alreadyRendered) {
+    } else if (!alreadyRendered && shouldWeRender && msg.latest) {
       scroller.insertBefore(rendered, scroller.childNodes[1])
     }
+
+    const previous = await logs.get(opened.previous)
+
+    console.log(previous)
+
+    if (!previous) { gossip(opened.previous)}
   }
 }
