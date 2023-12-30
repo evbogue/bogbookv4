@@ -40,11 +40,15 @@ export const process = async (m) => {
 
     const alreadyRendered = document.getElementById(opened.hash)
 
-    const src = window.location.hash
- 
-    const shouldWeRender = window.location.hash === '' || opened.hash || opened.author
+    const src = window.location.hash.substring(1)
 
-    if (!scroller.firstChild && shouldWeRender || shouldWeRender && !msg.latest) {
+    console.log(src) 
+
+    const shouldWeRender = (src === opened.author || src === opened.hash || src === '')
+
+    console.log(shouldWeRender)
+
+    if (!scroller.firstChild && shouldWeRender && !alreadyRendered || !alreadyRendered && shouldWeRender && !msg.latest) {
       scroller.appendChild(rendered)
     } else if (!alreadyRendered && shouldWeRender && msg.latest) {
       scroller.insertBefore(rendered, scroller.childNodes[1])
