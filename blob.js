@@ -15,7 +15,6 @@ export const make = async (file) => {
 }
 
 export const find = async (hash) => {
-  console.log(hash)
   const file = await cachekv.get(hash)
   if (file) {
     return file
