@@ -19,43 +19,46 @@ export const process = async (m) => {
   if (msg.type === 'post') {
         
     const opened = await open(msg.payload)
+    const alreadyHave = await logs.get(opened.hash)
 
-    logs.add(opened.raw)
+    if (!alreadyHave) {
+      logs.add(opened.raw)
 
-    if (msg.latest) {
-      const previous = {
-        msg: opened
+      if (msg.latest) {
+        const previous = {
+          msg: opened
+        }
+        if (msg.name) {previous.name = msg.name}
+        const alreadyHave = await logs.get(opened.hash)
+        await cachekv.put(opened.author, (JSON.stringify(previous)))
       }
-      if (msg.name) {previous.name = msg.name}
-      await cachekv.put(opened.author, (JSON.stringify(previous)))
+
+      if (msg.boxed) {
+        opened.text =  '🔒 '
+        opened.text = opened.text + (await unbox(msg.boxed) || '')
+      } else {
+        opened.text = msg.blob
+      }
+
+      const rendered = await render(opened)
+
+      const alreadyRendered = document.getElementById(opened.hash)
+
+      const src = window.location.hash.substring(1)
+
+      const shouldWeRender = (src === opened.author || src === opened.hash || src === '')
+
+      console.log(shouldWeRender)
+
+      if (!scroller.firstChild && shouldWeRender && !alreadyRendered || !alreadyHave && shouldWeRender && !msg.latest) {
+        scroller.appendChild(rendered)
+      } else if (!alreadyRendered && !alreadyHave && shouldWeRender && msg.latest) {
+        scroller.insertBefore(rendered, scroller.childNodes[1])
+      }
+
+      const previous = await logs.get(opened.previous)
+
+      if (!previous) { gossip(opened.previous)}
     }
-
-    if (msg.boxed) {
-      opened.text =  '🔒 '
-      opened.text = opened.text + (await unbox(msg.boxed) || '')
-    } else {
-      opened.text = msg.blob
-    }
-    const rendered = await render(opened)
-
-    const alreadyRendered = document.getElementById(opened.hash)
-
-    const src = window.location.hash.substring(1)
-
-    console.log(src) 
-
-    const shouldWeRender = (src === opened.author || src === opened.hash || src === '')
-
-    console.log(shouldWeRender)
-
-    if (!scroller.firstChild && shouldWeRender && !alreadyRendered || !alreadyRendered && shouldWeRender && !msg.latest) {
-      scroller.appendChild(rendered)
-    } else if (!alreadyRendered && shouldWeRender && msg.latest) {
-      scroller.insertBefore(rendered, scroller.childNodes[1])
-    }
-
-    const previous = await logs.get(opened.previous)
-
-    if (!previous) { gossip(opened.previous)}
   }
 }
