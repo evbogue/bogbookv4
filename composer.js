@@ -32,19 +32,17 @@ export const composer = async (msg) => {
 
   const select = window.getSelection().toString()
 
-  const re = h('div')
+  const preview = h('div')
 
   let context = ''
 
   if (msg) {
     const getReplyPrevious = JSON.parse(await cachekv.get(msg.author))
     context = '[' + (getReplyPrevious.name || msg.author.substring(0, 7)) + '](' + msg.author + ') ↳ [' + (select || msg.hash.substring(0, 7)) + '](' + msg.hash + ') '
-    re.innerHTML = await markdown(context)
+    preview.innerHTML = await markdown(context)
   }
 
   if (!msg) { msg = {hash: 'home'}}
-
-  const preview = h('div', [h('p', [' '])])
 
   const textarea = h('textarea', {placeholder: 'Write a message', style: 'width: 98%;'})
 
@@ -55,7 +53,7 @@ export const composer = async (msg) => {
     } else {
       cachekv.rm('draft:' + msg.hash)
     }
-    preview.innerHTML = await markdown(textarea.value)
+    preview.innerHTML = await markdown(context + '\n\n' + textarea.value)
   })
 
   const got = await cachekv.get('draft:' + msg.hash)
@@ -103,7 +101,6 @@ export const composer = async (msg) => {
   
   const composeDiv = h('div', {classList: 'message'}, [
     id,
-    re,
     preview,
     textarea,
     h('br'),
