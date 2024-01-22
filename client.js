@@ -21,7 +21,6 @@ const connect = (s) => {
     if (parse.latest) {
       const opened = await open(parse.payload)
       const check = await kv.get([opened.hash])
-      console.log(check)
       if (!check.value) {
         const content = 'https://bogbook.com/#' + opened.hash + ' | ' + (parse.name + ' ' || ' ') + opened.author 
         console.log(content)
