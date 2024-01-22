@@ -10,5 +10,6 @@ const server = (window.location.protocol === 'https:' ? 'wss://' : 'ws://') + lo
 
 if (!window.location.hash) { window.location = '#' }
 
+//connect('wss://bogbook.com/')
 connect(server)
 route(document.body)
