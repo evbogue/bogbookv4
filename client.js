@@ -1,8 +1,9 @@
-
 import { ed25519 } from './keys.js'
 import { open } from './sbog.js'
 
-const server = 'wss://bogbook.com/'
+const kv = await Deno.openKv()
+
+const server = 'ws://localhost:8000/'
 
 const connect = (s) => {
   const ws = new WebSocket(s)
@@ -19,12 +20,17 @@ const connect = (s) => {
     const parse = JSON.parse(e.data)
     if (parse.latest) {
       const opened = await open(parse.payload)
-      const content = 'https://bogbook.com/#' + opened.hash + ' | ' + (parse.name + ' ' || ' ') + opened.author 
-      console.log(content)
-      fetch('https://ntfy.sh/bogbook', {
-        method: 'POST',
-        body: content 
-      })
+      const check = await kv.get([opened.hash])
+      console.log(check)
+      if (!check.value) {
+        const content = 'https://bogbook.com/#' + opened.hash + ' | ' + (parse.name + ' ' || ' ') + opened.author 
+        console.log(content)
+        kv.set([opened.hash], parse.payload)
+        fetch('https://ntfy.sh/bogbook', {
+          method: 'POST',
+          body: content 
+        })
+      }
     }    
   }
 
