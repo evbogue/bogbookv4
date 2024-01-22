@@ -103,8 +103,8 @@ export const composer = async (msg) => {
   
   const composeDiv = h('div', {classList: 'message'}, [
     id,
-    preview,
     re,
+    preview,
     textarea,
     h('br'),
     button,
