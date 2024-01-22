@@ -3,7 +3,7 @@ import { open } from './sbog.js'
 
 const kv = await Deno.openKv()
 
-const server = 'ws://localhost:8000/'
+const server = 'wss://bogbook.com/'
 
 const connect = (s) => {
   const ws = new WebSocket(s)
