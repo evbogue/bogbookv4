@@ -95,6 +95,12 @@ export const composer = async (msg) => {
       preview.textContent = ''
       if (msg && msg.hash != 'home') {
         composeDiv.replaceWith(rendered)
+      } if (msg.hash = 'home') {
+        if (composeDiv.childNodes[1]) {
+          composeDiv.parentNode.insertBefore(rendered, composeDiv.parentNode.childNodes[1])
+        } else {
+          composeDiv.parentNode.appendChild(rendered)
+        }
       } 
     }
   }, ['Send'])
