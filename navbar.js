@@ -6,11 +6,10 @@ import { search } from './search.js'
 const pubkey = await ed25519.pubkey()
 
 export const navbar = h('navbar' , {id: 'navbar'}, [
+  search,
   await avatar(pubkey),
   ' ',
   h('a', {href: '#'}, ['Home']),
   ' ',
   h('a', {href: '#settings'}, ['Settings']),
-  ' ',
-  search
 ])

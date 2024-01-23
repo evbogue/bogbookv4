@@ -71,6 +71,7 @@ img {
 }
 
 #navbar {
+  padding-top: .5em;
   padding-left: 1em;
   position: fixed;
   width: 100%;
@@ -91,7 +92,7 @@ img {
 }
 
 #scroller { 
-  margin-top: 35px;
+  margin-top: 45px;
   margin-left: auto;
   width: 780px;
   max-width: 100%;
