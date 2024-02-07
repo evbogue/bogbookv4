@@ -37,9 +37,9 @@ export async function open (msg) {
   const obj = {
     timestamp: parseInt(opened.substring(0, 13)),
     author: opened.substring(13, 57),
-    hash : opened.substring(145),
-    previous: opened.substring(101, 145),
     data: opened.substring(57, 101),
+    previous: opened.substring(101, 145),
+    hash : opened.substring(145),
     raw: msg
   }
 
