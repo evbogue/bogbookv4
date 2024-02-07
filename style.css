@@ -101,6 +101,8 @@ img {
 
 @media only screen and (max-width: 680px) {
   #scroller { margin-top: 35px; }
+
+  input { width: 85px;}
  
   textarea {
     height: 150px;
