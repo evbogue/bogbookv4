@@ -76,7 +76,8 @@ export const logs = function logs (query) {
     query: async function (query) {
       if (arraystore[0]) {
         if (query.startsWith('?')) {
-          const querylog = arraystore.filter(msg => msg.txt && msg.txt.includes(query.substring(1)))
+          const search = query.substring(1).replace(/%20/g, ' ').toUpperCase()
+          const querylog = arraystore.filter(msg => msg.txt && msg.txt.toUpperCase().includes(search))
           return querylog 
         } else {
           const querylog = arraystore.filter(msg => msg.author == query || msg.hash == query)
