@@ -12,4 +12,6 @@ export const navbar = h('navbar' , {id: 'navbar'}, [
   h('a', {href: '#'}, ['Home']),
   ' ',
   h('a', {href: '#settings'}, ['Settings']),
+  ' ',
+  h('a', {href: 'https://github.com/evbogue/bogbookv4'}, ['Git'])
 ])
