@@ -22,7 +22,7 @@ const connect = (s) => {
       const opened = await open(parse.payload)
       const check = await kv.get([opened.hash])
       if (!check.value) {
-        const content = 'https://bogbook.com/#' + opened.hash + ' | ' + (parse.name + ' ' || ' ') + 'https://bogbook.com/#' + opened.author 
+        const content = 'https://bogbook.com/#' + opened.hash + ' | ' + (parse.name || '' + ' ' || ' ') + 'https://bogbook.com/#' + opened.author 
         console.log(content)
         kv.set([opened.hash], parse.payload)
         fetch('https://ntfy.sh/bogbook', {
