@@ -15,6 +15,10 @@ export const route = async (container) => {
 
   const src = window.location.hash.substring(1)
 
+  if (src.length === 43) {
+    window.location.hash = src + '='
+  }
+
   screen.appendChild(navbar)
 
   if (src === '') {
