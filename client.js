@@ -44,8 +44,9 @@ const connect = (s) => {
   ws.onerror = () => {
     setTimeout(() => {
       ws.close()
+      connect(server)
       retryCount++
-    }, 10000 * retryCount)
+    }, 1000 * retryCount)
   }
 }
 
