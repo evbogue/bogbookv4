@@ -48,8 +48,6 @@ export const process = async (m) => {
 
       const shouldWeRender = (src === opened.author || src === opened.hash || src === '')
 
-      console.log(shouldWeRender)
-
       if (!scroller.firstChild && shouldWeRender && !alreadyRendered || !alreadyHave && shouldWeRender && !msg.latest) {
         scroller.appendChild(rendered)
       } else if (!alreadyRendered && !alreadyHave && shouldWeRender && msg.latest) {

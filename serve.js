@@ -8,7 +8,6 @@ const kv = await Deno.openKv()
 
 channel.onmessage = async e => {
   (e.target != channel) && channel.postMessage(e.data)
-  console.log(e.data)
   if (e.data.length > 44) {
     const msg = JSON.parse(e.data)
     const opened = await open(msg.payload)
@@ -27,7 +26,6 @@ channel.onmessage = async e => {
   } 
   if (e.data.length === 44) {
     const msg = await kv.get([e.data])
-    console.log(msg.value)
     if (msg.value && msg.value.latest) {
       sockets.forEach(s => s.send(JSON.stringify(msg.value)))
     } else if (msg.value) {

@@ -76,7 +76,6 @@ export const render = async (m) => {
   const threads = await logs.query('?' + m.hash)
 
   if (threads[0]) {
-    console.log(threads)
     threads.forEach(async (item) => {
       const getMsg = document.getElementById(item.hash)
       if (!getMsg) {

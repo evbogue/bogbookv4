@@ -59,7 +59,6 @@ export const composer = async (msg) => {
   const got = await cachekv.get('draft:' + msg.hash)
 
   if (got) {
-    console.log(got)
     textarea.value = got
     preview.innerHTML = await markdown(textarea.value)
   }
