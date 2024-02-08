@@ -9,11 +9,16 @@ const connect = (s) => {
   const ws = new WebSocket(s)
 
   ws.onmessage = async (e) => {
+    console.log('connecting')
     ws.send(ed25519.pubkey())
   }
 
   setInterval(() => {
-    ws.send(ed25519.pubkey())
+    try {
+      ws.send(ed25519.pubkey())
+    } catch {
+      console.log('connection closed')
+    }
   }, 100000)
 
   ws.onmessage = async (e) => {
