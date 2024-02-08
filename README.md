@@ -11,7 +11,7 @@ If you want new post notifications subscribe to https://ntfy.sh/bogbook using yo
 ### Run Bogbook on your local
 
 ```
-deno run --allow-all --unstable serve.js
+deno run --allow-all --unstable-broadcast-channel --unstable-kv serve.js
 ```
 
 ### The protocol
