@@ -8,7 +8,7 @@ const server = 'wss://bogbook.com/'
 const connect = (s) => {
   const ws = new WebSocket(s)
 
-  ws.onmessage = async (e) => {
+  ws.onopen = async (e) => {
     console.log('connecting')
     ws.send(ed25519.pubkey())
   }
