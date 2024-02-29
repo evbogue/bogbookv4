@@ -16,22 +16,22 @@ export const composer = async (msg) => {
   const id = await avatar(pubkey)
   const getPrevious = await cachekv.get(pubkey)
 
-  console.log(getPrevious)
-
   let previousHash
   let previous
 
-  if (!getPrevious) { previous = {} }
-
   if (getPrevious) {
+    console.log(getPrevious)
     const obj = JSON.parse(getPrevious)
-    const opened = await open(obj.payload)
-    console.log(opened)
-    previous = opened
+    if (obj.payload) {
+      const opened = await open(obj.payload)
+      console.log(opened)
+      previous = opened
+    }
   }
 
-  console.log(previous)
+  if (!getPrevious) { previous = {} }
 
+  console.log(previous)
 
   if (previous) {
     previousHash = previous.hash
