@@ -82,21 +82,17 @@ img {
   border-bottom: 1px solid #efefef;
 }
 
-#editbar {
+#contacts {
+  width: 32%;
+  margin-top: 33px;
+  float: left;
   position: fixed;
-  width: 100%;
-  z-index: 1;
-  top: 0; right; 0; left: 0; bottom: 0;
-  padding-left: 1em; padding-top: 1em;
-  background: white;
 }
 
 #scroller { 
-  margin-top: 45px;
-  margin-left: auto;
-  width: 780px;
-  max-width: 100%;
-  margin-right: auto;
+  margin-top: 33px;
+  width: 66%;
+  float: right;
 }
 
 @media only screen and (max-width: 680px) {

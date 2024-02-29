@@ -11,10 +11,10 @@ import { render } from './render.js'
 
 const pubkey = await ed25519.pubkey()
 
-const id = await avatar(pubkey)
 
 export const composer = async (msg) => {
 
+  const id = await avatar(pubkey)
   const getPrevious = await cachekv.get(pubkey)
 
   let previous
@@ -75,31 +75,32 @@ export const composer = async (msg) => {
       const opened = await open(signed)
       const blob = await find(opened.data)
       const obj = {
-        type: 'post',
-        latest: true,
+        type: 'latest',
         payload: signed,
         blob
       }
       if (previous && previous.name) {
         obj.name = previous.name
       }
-      logs.add(signed)      
-      gossip(JSON.stringify(obj))
-      previous.msg = opened
-      cachekv.put(pubkey, JSON.stringify(previous))
+      if (previous && previous.image) {
+        obj.image = previous.image
+      }
+      logs.add(signed)
+      console.log(obj)      
+      gossip(obj)
+      previous.payload = signed
       opened.text = blob
       const rendered = await render(opened)
+      cachekv.put(pubkey, JSON.stringify(previous))
       textarea.value = ''
       cachekv.rm('draft:' + msg.hash)
       preview.textContent = ''
       if (msg && msg.hash != 'home') {
-        composeDiv.replaceWith(rendered)
-      } if (msg.hash = 'home') {
-        if (composeDiv.childNodes[1]) {
-          composeDiv.parentNode.insertBefore(rendered, composeDiv.parentNode.childNodes[1])
-        } else {
-          composeDiv.parentNode.appendChild(rendered)
+        if (composeDiv) {
+          composeDiv.replaceWith(rendered)
         }
+      } if (msg.hash = 'home') {
+        composeDiv.after(rendered)
       } 
     }
   }, ['Send'])

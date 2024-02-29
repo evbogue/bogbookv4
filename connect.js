@@ -2,8 +2,31 @@ import { process } from './process.js'
 import { ed25519 } from './keys.js'
 import { addSocket, rmSocket} from './gossip.js'
 import { logs } from './log.js'
+import { trystero } from './trystero.js'
+import { stat } from './latest.js'
+import { h } from './lib/h.js'
 
 export const connect = (s) => {
+  trystero.connect({appId: 'bogbookv4public', password: 'password'})
+
+  trystero.onmessage(async (data, id) => {
+    await process(data, id)
+  })
+
+  trystero.join(id => {
+    const online = document.getElementById('online')
+    trystero.send(stat)
+    console.log('joined ' + id)
+    const contact = h('div', {id, classList: 'message'})
+    online.after(contact)
+  })
+
+  trystero.leave(id => {
+    const got = document.getElementById(id)
+    got.remove()
+    console.log('left ' + id)
+  })
+
   const ws = new WebSocket(s)
   ws.binaryType = 'arraybuffer'
 
@@ -21,7 +44,7 @@ export const connect = (s) => {
   }
 
   ws.onmessage = async (e) => {
-    await process(e.data)
+    await process(JSON.parse(e.data))
   }
 
   ws.onclose = (e) => {

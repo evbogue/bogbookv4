@@ -10,23 +10,33 @@ channel.onmessage = async e => {
   (e.target != channel) && channel.postMessage(e.data)
   if (e.data.length > 44) {
     const msg = JSON.parse(e.data)
-    const opened = await open(msg.payload)
-    kv.set([opened.hash], opened.raw)
-    if (msg.blob) {
-      kv.set([opened.data], msg.blob)
-      opened.text = msg.blob
+    if (msg.type === 'post') {
+      const opened = await open(msg.payload)
+      kv.set([opened.hash], opened.raw)
+      if (msg.blob) {
+        kv.set([opened.data], msg.blob)
+        opened.text = msg.blob
+      }
     }
     if (msg.boxed) {
       kv.set([opened.data], msg.boxed)
     }
-    if (msg.latest) {
-      kv.set([opened.author], msg)
+    if (msg.type === 'latest') {
+      const opened = await open(msg.payload)
+      const obj = msg
+      if (msg.image) { delete obj.image }
+      kv.set([opened.author], obj)
+      if (msg.blob) {
+        kv.set([opened.data], msg.blob)
+        opened.text = msg.blob
+      }
     }
     sockets.forEach(s => s.send(e.data))
   } 
   if (e.data.length === 44) {
     const msg = await kv.get([e.data])
-    if (msg.value && msg.value.latest) {
+    if (msg.value && msg.value.type === 'latest') {
+      msg.value.type = 'post'
       sockets.forEach(s => s.send(JSON.stringify(msg.value)))
     } else if (msg.value) {
       try {

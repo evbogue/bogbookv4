@@ -3,7 +3,6 @@ import { composer } from './composer.js'
 import { logs } from './log.js' 
 import { adder } from './adder.js'
 import { gossip }  from './gossip.js'
-import { navbar } from './navbar.js'
 import { settings } from './settings.js'
 
 export const route = async (container) => {
@@ -18,8 +17,6 @@ export const route = async (container) => {
   if (src.length === 43) {
     window.location.hash = src + '='
   }
-
-  screen.appendChild(navbar)
 
   if (src === '') {
     scroller.appendChild(await composer())

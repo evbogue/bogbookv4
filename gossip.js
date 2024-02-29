@@ -1,10 +1,20 @@
+import { trystero } from './trystero.js'
+
 const sockets = new Set()
 
 export const gossip = (msg) => {
-  if (sockets.length) { 
-    sockets.forEach(s => s.send(msg))
+  if (trystero.send) {
+    trystero.send(msg)
   } else {
-    setTimeout(function () { sockets.forEach(s => s.send(msg)) }, 500)
+    setTimeout(() => {
+      trystero.send(msg)
+    }, 1000)
+  }
+
+  if (sockets.length) { 
+    sockets.forEach(s => s.send(JSON.stringify(msg)))
+  } else {
+    setTimeout(function () { sockets.forEach(s => s.send(JSON.stringify(msg))) }, 500)
   }
 }
 
