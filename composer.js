@@ -11,24 +11,33 @@ import { render } from './render.js'
 
 const pubkey = await ed25519.pubkey()
 
-
 export const composer = async (msg) => {
 
   const id = await avatar(pubkey)
   const getPrevious = await cachekv.get(pubkey)
 
+  console.log(getPrevious)
+
+  let previousHash
   let previous
 
   if (!getPrevious) { previous = {} }
 
   if (getPrevious) {
-    previous = JSON.parse(getPrevious)
+    const obj = JSON.parse(getPrevious)
+    const opened = await open(obj.payload)
+    console.log(opened)
+    previous = opened
   }
 
-  let previousHash
-  if (previous && previous.msg) {
-    previousHash = previous.msg.hash
+  console.log(previous)
+
+
+  if (previous) {
+    previousHash = previous.hash
   }
+
+  console.log(previousHash)
 
   const select = window.getSelection().toString()
 
