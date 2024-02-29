@@ -2,12 +2,13 @@ import { serveDir } from 'https://deno.land/std/http/file_server.ts'
 import { open } from './sbog.js'
 
 const sockets = new Set()
-const channel = new BroadcastChannel("")
+//const channel = new BroadcastChannel("")
 
 const kv = await Deno.openKv()
 
-channel.onmessage = async e => {
-  (e.target != channel) && channel.postMessage(e.data)
+const process = async (e) => {
+  //(e.target != channel) && channel.postMessage(e.data)
+  console.log(e.data)
   if (e.data.length > 44) {
     const msg = JSON.parse(e.data)
     if (msg.type === 'post') {
@@ -62,7 +63,7 @@ Deno.serve((r) => {
   try {
     const { socket, response } = Deno.upgradeWebSocket(r)
     sockets.add(socket)
-    socket.onmessage = channel.onmessage
+    socket.onmessage = process 
     socket.onclose = _ => sockets.delete(socket)
     return response
   } catch {
