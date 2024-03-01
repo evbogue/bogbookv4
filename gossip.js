@@ -3,6 +3,7 @@ import { trystero } from './trystero.js'
 const sockets = new Set()
 
 export const gossip = (msg) => {
+  console.log(msg)
   if (trystero.send) {
     trystero.send(msg)
   } else {
