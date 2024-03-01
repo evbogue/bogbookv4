@@ -16,15 +16,6 @@ export const composer = async (msg) => {
 
   const id = await avatar(pubkey)
 
-  const latest = await getInfo(pubkey)
-
-  let previousHash
-
-  if (latest.payload) {
-    const opened = await open(latest.payload)
-    previousHash = opened.hash
-  }
-
   const select = window.getSelection().toString()
 
   const preview = h('div')
@@ -60,6 +51,15 @@ export const composer = async (msg) => {
 
   const button = h('button', {
     onclick: async () => {
+      const latest = await getInfo(pubkey)
+
+      let previousHash
+
+      if (latest.payload) {
+        const opened = await open(latest.payload)
+        previousHash = opened.hash
+      }
+
       let content
       if (context) {
         content = context + '\n\n' + textarea.value
