@@ -1,33 +1,43 @@
 import { trystero } from './trystero.js'
 
-let queue = []
+let wq = []
+let tq = []
+
+setInterval(() => {
+  tq = []
+  wq = []
+}, 10000)
 
 const sockets = new Set()
 
-export const gossip = (msg) => {
-
-  setInterval(() => {
-    queue = []
-  }, 10000)
-  console.log(queue)
-  if (!queue.includes(msg)) {
+export const gossip = async (msg) => {
+    if (!tq.includes(msg)) {
     console.log(msg)
     if (trystero.send) {
       trystero.send(msg)
+      tq.push(msg)
     } else {
       setTimeout(() => {
         trystero.send(msg)
+        tq.push(msg)
       }, 1000)
     }
-
-    if (sockets.length) { 
-      sockets.forEach(s => s.send(JSON.stringify(msg)))
+  }
+  if (!wq.includes(msg)) {
+    let mssg = '' 
+    if (msg.length === 44) { mssg = msg} 
+    if (typeof msg === 'object') { mssg = await JSON.stringify(msg)}
+    console.log(mssg)
+    if (sockets.length) {
+      sockets.forEach(s => s.send(mssg)) 
+      wq.push(mssg)
     } else {
-      setTimeout(function () { sockets.forEach(s => s.send(JSON.stringify(msg))) }, 500)
+      setTimeout(() => { 
+        sockets.forEach(s => s.send(mssg))
+        tq.push(mssg)
+      }, 1000)
     }
   }
-
-  queue.push(msg)
 }
 
 export const addSocket = (s) => sockets.add(s) 
