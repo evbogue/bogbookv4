@@ -5,7 +5,6 @@ let queue = []
 const sockets = new Set()
 
 export const gossip = (msg) => {
-  queue.push(msg)
 
   setInterval(() => {
     queue = []
@@ -27,6 +26,8 @@ export const gossip = (msg) => {
       setTimeout(function () { sockets.forEach(s => s.send(JSON.stringify(msg))) }, 500)
     }
   }
+
+  queue.push(msg)
 }
 
 export const addSocket = (s) => sockets.add(s) 

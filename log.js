@@ -59,6 +59,14 @@ setInterval(function () {
 
 export const logs = function logs (query) {
   return {
+    getLatest: async function (query) {
+      if (arraystore[0]) {
+        const querylog = arraystore.filter(msg => msg.author == query)
+        if (querylog[0]) {
+          return querylog[querylog.length - 1]
+        }
+      } 
+    },
     getFeeds: async function () {
       const feeds = []
       

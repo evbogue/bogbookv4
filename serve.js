@@ -8,7 +8,6 @@ const kv = await Deno.openKv()
 
 const process = async (e) => {
   //(e.target != channel) && channel.postMessage(e.data)
-  console.log(e.data)
   if (e.data.length > 44) {
     const msg = JSON.parse(e.data)
     if (msg.type === 'post') {

@@ -8,36 +8,22 @@ import { avatar } from './avatar.js'
 import { logs } from './log.js' 
 import { markdown } from './markdown.js'
 import { render } from './render.js'
+import { getInfo, saveInfo } from './getinfo.js'
 
 const pubkey = await ed25519.pubkey()
 
 export const composer = async (msg) => {
 
   const id = await avatar(pubkey)
-  const getPrevious = await cachekv.get(pubkey)
+
+  const latest = await getInfo(pubkey)
 
   let previousHash
-  let previous
 
-  if (getPrevious) {
-    console.log(getPrevious)
-    const obj = JSON.parse(getPrevious)
-    if (obj.payload) {
-      const opened = await open(obj.payload)
-      console.log(opened)
-      previous = opened
-    }
+  if (latest.payload) {
+    const opened = await open(latest.payload)
+    previousHash = opened.hash
   }
-
-  if (!getPrevious) { previous = {} }
-
-  console.log(previous)
-
-  if (previous) {
-    previousHash = previous.hash
-  }
-
-  console.log(previousHash)
 
   const select = window.getSelection().toString()
 
@@ -83,24 +69,14 @@ export const composer = async (msg) => {
       const signed = await publish(content, previousHash)  
       const opened = await open(signed)
       const blob = await find(opened.data)
-      const obj = {
-        type: 'latest',
-        payload: signed,
-        blob
-      }
-      if (previous && previous.name) {
-        obj.name = previous.name
-      }
-      if (previous && previous.image) {
-        obj.image = previous.image
-      }
+      latest.type = 'latest'
+      latest.payload = signed
+      latest.blob = blob
       logs.add(signed)
-      console.log(obj)      
-      gossip(obj)
-      previous.payload = signed
+      gossip(latest)
       opened.text = blob
       const rendered = await render(opened)
-      cachekv.put(pubkey, JSON.stringify(previous))
+      saveInfo(pubkey, latest) 
       textarea.value = ''
       cachekv.rm('draft:' + msg.hash)
       preview.textContent = ''

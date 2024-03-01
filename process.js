@@ -8,14 +8,27 @@ import { logs } from './log.js'
 import { markdown } from './markdown.js'
 import { gossip } from './gossip.js'
 import { avatar } from './avatar.js'
+import { getInfo } from './getinfo.js'
 
 export const process = async (msg, id) => {
+  console.log(msg)
   const scroller = document.getElementById('scroller')
   if (msg.length === 44) {
     const blob = await find(msg)
 
     if (blob) {
       const obj = {type: 'blob', payload: blob}
+      gossip(obj)
+    }
+
+    const message = await logs.get(msg)
+
+    if (message) {
+      console.log('ITS A MESSAGE')
+      const obj = {
+        type: 'post',
+        payload: message.raw
+      }
       gossip(obj)
     }
   }
@@ -30,11 +43,7 @@ export const process = async (msg, id) => {
     const alreadyHave = await logs.get(opened.hash)
     
     if (msg.type === 'latest') {
-      const getDetails = await cachekv.get(opened.author)
-
-      let latest = {}
-
-      if (getDetails) {latest = JSON.parse(getDetails)}
+      const latest = await getInfo(opened.author)
 
       if (msg.image || msg.name) {
         if (msg.name) {

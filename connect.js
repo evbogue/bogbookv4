@@ -3,19 +3,24 @@ import { ed25519 } from './keys.js'
 import { addSocket, rmSocket} from './gossip.js'
 import { logs } from './log.js'
 import { trystero } from './trystero.js'
-import { stat } from './latest.js'
+import { getInfo } from './getinfo.js'
 import { h } from './lib/h.js'
+
+const pubkey = await ed25519.pubkey()
 
 export const connect = (s) => {
   trystero.connect({appId: 'bogbookv4public', password: 'password'})
 
   trystero.onmessage(async (data, id) => {
+    console.log(data)
     await process(data, id)
   })
 
-  trystero.join(id => {
+  trystero.join(async (id) => {
     const online = document.getElementById('online')
-    trystero.send(stat)
+    const latest = await getInfo(pubkey)
+    console.log(latest)
+    trystero.send(latest)
     console.log('joined ' + id)
     const contact = h('div', {id, classList: 'message'})
     online.after(contact)

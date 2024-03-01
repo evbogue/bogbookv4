@@ -1,10 +1,10 @@
 import { h } from './lib/h.js'
 import { cachekv } from './lib/cachekv.js'
-import { stat } from './latest.js'
 import { ed25519 } from './keys.js'
 import { vb } from './lib/vb.js'
 import { decode } from './lib/base64.js'
 import { trystero } from './trystero.js'
+import { getInfo, saveInfo } from './getinfo.js'
 
 const pubkey = await ed25519.pubkey()
 
@@ -25,10 +25,9 @@ export const avatar = async (id) => {
         for (const image of imagesOnScreen) {
           image.src = img.src
         }
-        stat.image = img.src
-        stat.type = 'latest'
-        trystero.send(stat)
-        await cachekv.put(pubkey, JSON.stringify(stat))
+        latest.image = img.src
+        trystero.send(latest)
+        await saveInfo(pubkey, latest)
       }
       reader.readAsDataURL(file)
   }})
@@ -39,13 +38,8 @@ export const avatar = async (id) => {
 
   const link = h('a', {href: '#' + id, classList: 'name' + id}, [id.substring(0, 7) + '...'])
 
-  const getInfo = await cachekv.get(id)
+  const latest = await getInfo(id)
 
-  let latest = {}
-
-  if (getInfo) {
-    latest = JSON.parse(getInfo)
-  }
   if (latest.name) {
     link.textContent = latest.name
   }
@@ -65,16 +59,15 @@ export const avatar = async (id) => {
   ])
 
   const edit = h('button', {onclick: () => {
-    const input = h('input', {style: 'width: 125px;', placeholder: id.substring(0, 7) + '...' || stat.name })
+    const input = h('input', {style: 'width: 125px;', placeholder: id.substring(0, 7) + '...' || latest.name })
     const editSpan = h('span', [
       input,
       h('button', {onclick: async () => {
         if (input.value) {
-          stat.name = input.value
+          latest.name = input.value
           link.textContent = input.value
-          await cachekv.put(pubkey, JSON.stringify(stat))
-          stat.type = 'latest'
-          trystero.send(stat)
+          await saveInfo(pubkey, latest)
+          trystero.send(latest)
           const namesOnScreen = document.getElementsByClassName('name' + id)
           for (const names of namesOnScreen) {
             names.textContent = input.value
