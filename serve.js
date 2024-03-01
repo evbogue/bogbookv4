@@ -7,6 +7,7 @@ const sockets = new Set()
 const kv = await Deno.openKv()
 
 const process = async (e) => {
+  console.log(e.data)
   //(e.target != channel) && channel.postMessage(e.data)
   if (e.data.length > 44) {
     const msg = JSON.parse(e.data)
@@ -26,6 +27,7 @@ const process = async (e) => {
       const obj = msg
       if (msg.image) { delete obj.image }
       kv.set([opened.author], obj)
+      kv.set([opened.hash], opened.raw)
       if (msg.blob) {
         kv.set([opened.data], msg.blob)
         opened.text = msg.blob
