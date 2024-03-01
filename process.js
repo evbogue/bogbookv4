@@ -74,7 +74,7 @@ export const process = async (msg, id) => {
       await cachekv.put(opened.author, JSON.stringify(msg))
       if (id) {
         const onlineId = document.getElementById(id)
-        const newOnlineId = h('div', {id, classList: 'message'}, [await avatar(opened.author)])
+        const newOnlineId = h('span', {id}, [await avatar(opened.author)])
         onlineId.replaceWith(newOnlineId)
       }
     }

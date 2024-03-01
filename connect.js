@@ -12,18 +12,16 @@ export const connect = (s) => {
   trystero.connect({appId: 'bogbookv4public', password: 'password'})
 
   trystero.onmessage(async (data, id) => {
-    console.log(data)
     await process(data, id)
   })
 
   trystero.join(async (id) => {
     const online = document.getElementById('online')
     const latest = await getInfo(pubkey)
-    console.log(latest)
     trystero.send(latest)
     console.log('joined ' + id)
-    const contact = h('div', {id, classList: 'message'})
-    online.after(contact)
+    const contact = h('span', {id})
+    online.appendChild(contact)
   })
 
   trystero.leave(id => {
