@@ -98,7 +98,7 @@ img {
 
 @media only screen and (max-width: 680px) {
   #scroller { width: 100%; margin-top: 0; margin-left: 0; margin-right: 0;}
-  #contacts { width: 100%; position: relative; float: none;}
+  #contacts { width: 100%; position: static; float: none; margin-top: 44px;}
   input { width: 85px;}
  
   textarea {
