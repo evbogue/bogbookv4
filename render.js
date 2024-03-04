@@ -48,13 +48,16 @@ export const render = async (m) => {
     ts
   ])
 
+  const compose = await composer(m)
+
   const reply = h('button', {
     onclick: async () => {
-      if (replyDiv.firstChild) {
-        replyDiv.insertBefore(await composer(m), replyDiv.firstChild)
-      } else {
-        replyDiv.appendChild(await composer(m))
-      }
+      const replyAlready = document.getElementById('reply:' + m.hash)
+      if (replyDiv.firstChild && !replyAlready) {
+        replyDiv.insertBefore(compose, replyDiv.firstChild)
+      } else if (!replyAlready) {
+        replyDiv.appendChild(compose)
+      } if (replyAlready) { replyAlready.remove()}
     }
   }, ['Reply'])
 

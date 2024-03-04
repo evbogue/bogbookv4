@@ -90,7 +90,7 @@ export const composer = async (msg) => {
     }
   }, ['Send'])
   
-  const composeDiv = h('div', {classList: 'message'}, [
+  const composeDiv = h('div', {id: 'reply:' + msg.hash, classList: 'message'}, [
     id,
     preview,
     textarea,
