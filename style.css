@@ -140,6 +140,13 @@ textarea {
   object-fit: cover;
 }
 
+.avatarbig {
+  width: 125px;
+  height: 125px;
+  vertical-align: middle;
+  object-fit: cover;
+}
+
 .thumb { 
   width: 100%;
   max-width: 100%; 

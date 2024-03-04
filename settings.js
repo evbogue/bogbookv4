@@ -1,8 +1,63 @@
 import { h } from './lib/h.js'
 import { ed25519 } from './keys.js'
 import { cachekv } from './lib/cachekv.js'
+import { getInfo, saveInfo } from './getinfo.js'
+import { decode } from './lib/base64.js'
+import { trystero } from './trystero.js'
+import { vb } from './lib/vb.js'
 
 const keypair = await ed25519.keypair()
+const pubkey = await ed25519.pubkey()
+const latest = await getInfo(pubkey)
+
+const input = h('input', {placeholder: latest.name || pubkey})
+
+const saveName = h('button', {
+  onclick: async () => {
+    if (input.value) {
+      latest.name = input.value
+      input.placeholder = input.value
+      await saveInfo(pubkey, latest)
+      trystero.send(latest)
+      const namesOnScreen = document.getElementsByClassName('name' + pubkey)
+      for (const names of namesOnScreen) {
+        names.textContent = input.value
+      }
+      input.value = ''
+    }
+  }
+}, ['Save name'])
+
+const uploadButton = h('button', {
+  onclick: () => {
+    uploader.click()
+  }
+}, ['Upload profile photo'])
+
+const uploader = h('input', {
+  type: 'file', style: 'display: none;', onchange: (e) => {
+    const file = e.srcElement.files[0]
+    const reader = new FileReader()
+    reader.onloadend = async () => {
+      img.src = await reader.result
+      const imagesOnScreen = document.getElementsByClassName('image' + pubkey)
+      for (const image of imagesOnScreen) {
+        image.src = img.src
+      }
+      latest.image = img.src
+      trystero.send(latest)
+      await saveInfo(pubkey, latest)
+    }
+    reader.readAsDataURL(file)
+}})
+
+const img = vb(decode(pubkey), 256)
+
+img.classList = 'avatarbig image' + pubkey
+
+if (latest.image) {
+  img.src = latest.image
+}
 
 const textarea = h('textarea', [keypair])
 
@@ -35,9 +90,19 @@ const saveButton = h('button', {
     location.href = '#'
     location.reload()
   }
-}, ['Save'])
+}, ['Save keypair'])
 
 export const settings = h('div', {classList: 'message'}, [
+  img,
+  h('br'),
+  uploadButton,
+  h('br'),
+  h('hr'),
+  'Name: ',
+  input,
+  saveName,
+  h('br'),
+  h('hr'),
   'Keypair:',
   h('br'),
   textarea,

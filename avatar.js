@@ -6,6 +6,7 @@ import { decode } from './lib/base64.js'
 import { trystero } from './trystero.js'
 import { getInfo, saveInfo } from './getinfo.js'
 
+
 const pubkey = await ed25519.pubkey()
 
 export const avatar = async (id) => {
@@ -76,15 +77,15 @@ export const avatar = async (id) => {
         }
       }}, ['Save'])
     ])
-    span.replaceWith(editSpan)
+    link.replaceWith(editSpan)
   }}, ['📝'])
 
-  if (id === pubkey) {
-    space.after(input)
-    space.after(uploadButton)
-    space.after(spacetwo)
-    space.after(edit)
-  }
+  //if (id === pubkey) {
+  //  space.after(input)
+  //  space.after(uploadButton)
+  //  space.after(spacetwo)
+  //  space.after(edit)
+  //}
 
   return span
 }
