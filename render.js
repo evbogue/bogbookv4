@@ -48,10 +48,9 @@ export const render = async (m) => {
     ts
   ])
 
-  const compose = await composer(m)
-
   const reply = h('button', {
     onclick: async () => {
+      const compose = await composer(m)
       const replyAlready = document.getElementById('reply:' + m.hash)
       if (replyDiv.firstChild && !replyAlready) {
         replyDiv.insertBefore(compose, replyDiv.firstChild)
