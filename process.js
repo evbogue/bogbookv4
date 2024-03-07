@@ -11,7 +11,6 @@ import { avatar } from './avatar.js'
 import { getInfo } from './getinfo.js'
 
 export const process = async (msg, id) => {
-  console.log(msg)
   const scroller = document.getElementById('scroller')
   if (msg.length === 44) {
     const blob = await find(msg)
@@ -24,7 +23,6 @@ export const process = async (msg, id) => {
     const message = await logs.get(msg)
 
     if (message) {
-      console.log('ITS A MESSAGE')
       const obj = {
         type: 'post',
         payload: message.raw
