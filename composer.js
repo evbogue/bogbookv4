@@ -21,9 +21,10 @@ export const composer = async (msg) => {
   const preview = h('div')
 
   let context = ''
-
+  
   if (msg) {
-    const getReplyPrevious = JSON.parse(await cachekv.get(msg.author))
+    const getReplyPrevious = await getInfo(msg.author)
+    //const getReplyPrevious = JSON.parse(await cachekv.get(msg.author))
     context = '[' + (getReplyPrevious.name || msg.author.substring(0, 7)) + '](' + msg.author + ') ↳ [' + (select || msg.hash.substring(0, 7)) + '](' + msg.hash + ') '
     preview.innerHTML = await markdown(context)
   }
