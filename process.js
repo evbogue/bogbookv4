@@ -11,7 +11,7 @@ import { getInfo, saveInfo } from './getinfo.js'
 
 export const process = async (msg, id) => {
   const scroller = document.getElementById('scroller')
-  if (msg.length === 44) {
+  if (msg.length === 44 && !msg.startsWith('{')) {
     const blob = await find(msg)
 
     if (blob) {
@@ -23,7 +23,7 @@ export const process = async (msg, id) => {
 
     const latest = await getInfo(msg)
 
-    if (latest) {
+    if (latest && latest.payload) {
       latest.type = 'post'
       gossip(latest)
     }
