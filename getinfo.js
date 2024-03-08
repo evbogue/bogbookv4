@@ -5,10 +5,8 @@ const info = new Map()
 
 export const getInfo = async (pubkey) => {
   if (info.has(pubkey)) {
-    console.log(pubkey + ' is in memory.')
     return info.get(pubkey)
   } else {
-    console.log(pubkey + ' is not in memory.')
     let obj = {}
 
     const getString = await cachekv.get(pubkey)
