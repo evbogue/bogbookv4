@@ -25,7 +25,7 @@ export const gossip = async (msg) => {
   }
   if (!wq.includes(msg)) {
     let mssg = '' 
-    if (msg.length === 44) { mssg = msg} 
+    if (msg.length === 44 && !msg.startsWith('{')) { mssg = msg} 
     if (typeof msg === 'object') { mssg = await JSON.stringify(msg)}
     console.log(mssg)
     if (sockets.length) {
