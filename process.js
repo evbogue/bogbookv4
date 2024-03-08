@@ -42,7 +42,7 @@ export const process = async (msg, id) => {
     const blobDiv = document.getElementById(hash)
     if (blobDiv) { blobDiv.innerHTML = await markdown(msg.payload)}
   }
-  if (msg.type === 'post' || msg.type === 'latest') {
+  if (msg.type === 'post' || msg.type === 'latest' && msg.payload) {
     const opened = await open(msg.payload)
     const alreadyHave = await logs.get(opened.hash)
     
