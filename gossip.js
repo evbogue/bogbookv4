@@ -11,8 +11,7 @@ setInterval(() => {
 const sockets = new Set()
 
 export const gossip = async (msg) => {
-    if (!tq.includes(msg)) {
-    console.log(msg)
+  if (!tq.includes(msg)) {
     if (trystero.send) {
       trystero.send(msg)
       tq.push(msg)
@@ -27,7 +26,6 @@ export const gossip = async (msg) => {
     let mssg = '' 
     if (msg.length === 44 && !msg.startsWith('{')) { mssg = msg} 
     if (typeof msg === 'object') { mssg = await JSON.stringify(msg)}
-    console.log(mssg)
     if (sockets.length) {
       sockets.forEach(s => s.send(mssg)) 
       wq.push(mssg)
