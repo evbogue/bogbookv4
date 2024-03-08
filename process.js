@@ -76,7 +76,7 @@ export const process = async (msg, id) => {
         }
       }
       
-      await saveinfo(opened.author, msg)
+      await saveInfo(opened.author, msg)
       if (id) {
         const onlineId = document.getElementById(id)
         const newOnlineId = h('span', {id}, [await avatar(opened.author)])
