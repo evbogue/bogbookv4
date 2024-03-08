@@ -21,6 +21,13 @@ export const process = async (msg, id) => {
 
     const message = await logs.get(msg)
 
+    const latest = await getInfo(msg)
+
+    if (latest) {
+      latest.type = 'post'
+      gossip(latest)
+    }
+
     if (message) {
       const obj = {
         type: 'post',
