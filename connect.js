@@ -22,6 +22,12 @@ export const connect = (s) => {
     console.log('joined ' + id)
     const contact = h('span', {id})
     online.appendChild(contact)
+    const feeds = await logs.getFeeds()
+    feeds.forEach(feed => {
+      if (feed != pubkey) {
+        trystero.send(feed)
+      }
+    })
   })
 
   trystero.leave(id => {
