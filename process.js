@@ -3,12 +3,11 @@ import { open } from './sbog.js'
 import { unbox } from './sbox.js'
 import { make, find } from './blob.js'
 import { render } from './render.js'
-import { cachekv } from './lib/cachekv.js'
 import { logs } from './log.js'
 import { markdown } from './markdown.js'
 import { gossip } from './gossip.js'
 import { avatar } from './avatar.js'
-import { getInfo } from './getinfo.js'
+import { getInfo, saveInfo } from './getinfo.js'
 
 export const process = async (msg, id) => {
   const scroller = document.getElementById('scroller')
@@ -69,7 +68,8 @@ export const process = async (msg, id) => {
           }
         }
       }
-      await cachekv.put(opened.author, JSON.stringify(msg))
+      
+      await saveinfo(opened.author, msg)
       if (id) {
         const onlineId = document.getElementById(id)
         const newOnlineId = h('span', {id}, [await avatar(opened.author)])
