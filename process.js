@@ -67,10 +67,16 @@ export const process = async (msg, id) => {
         if (msg.image) {
           if (latest.image != msg.image) {
             latest.image = msg.image
-            setTimeout(() => {
+            setTimeout(async () => {
               const imagesOnScreen = document.getElementsByClassName('image' + opened.author)
               for (const image of imagesOnScreen) {
-                image.src = latest.image
+                if (latest.image.length > 44) {
+                  image.src = latest.image
+                }
+                if (latest.image.length == 44) {
+                  const blob = await find(latest.image)
+                  image.src = blob
+                }
               }
             }, 100)
           }
