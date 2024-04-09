@@ -12,21 +12,20 @@ import { getInfo, saveInfo } from './getinfo.js'
 export const process = async (msg, id) => {
   const scroller = document.getElementById('scroller')
   if (msg.length === 44 && !msg.startsWith('{')) {
-    const blob = await find(msg)
 
-    if (blob) {
-      const obj = {type: 'blob', payload: blob}
+    const get = await find(msg)
+
+    if (get && get.type && get.type != 'latest') {
+      const obj = {type: 'blob', payload: get}
       gossip(obj)
+    } 
+
+    if (get && get.type && get.type === 'latest') {
+      get.type = 'post'
+      gossip(get)
     }
 
     const message = await logs.get(msg)
-
-    const latest = await getInfo(msg)
-
-    if (latest && latest.payload) {
-      latest.type = 'post'
-      gossip(latest)
-    }
 
     if (message) {
       const obj = {
