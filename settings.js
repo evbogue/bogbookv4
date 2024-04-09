@@ -1,6 +1,7 @@
 import { h } from './lib/h.js'
 import { ed25519 } from './keys.js'
 import { cachekv } from './lib/cachekv.js'
+import { find } from './blob.js'
 import { getInfo, saveInfo } from './getinfo.js'
 import { decode } from './lib/base64.js'
 import { trystero } from './trystero.js'
@@ -58,7 +59,8 @@ const img = vb(decode(pubkey), 256)
 img.classList = 'avatarbig image' + pubkey
 
 if (latest.image) {
-  img.src = latest.image
+  const blob = await find(latest.image) 
+  img.src = blob
 }
 
 const textarea = h('textarea', [keypair])
