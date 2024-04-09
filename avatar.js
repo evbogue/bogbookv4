@@ -1,7 +1,7 @@
 import { h } from './lib/h.js'
 import { cachekv } from './lib/cachekv.js'
 import { ed25519 } from './keys.js'
-import { find } from './blob.js'
+import { find, make } from './blob.js'
 import { vb } from './lib/vb.js'
 import { decode } from './lib/base64.js'
 import { trystero } from './trystero.js'
@@ -25,8 +25,10 @@ export const avatar = async (id) => {
 
   if (latest.image) {
     if (latest.image.length > 44) {
-
-      img.src = latest.image
+      const blob = await make(latest.image)
+      img.src = blob
+      latest.image = blob
+      await saveInfo(id, latest)
     } if (latest.image.length === 44) {
       const blob = await find(latest.image)
       img.src = blob
