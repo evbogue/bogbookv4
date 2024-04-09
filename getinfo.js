@@ -11,14 +11,12 @@ export const getInfo = async (pubkey) => {
 
     const getString = await cachekv.get(pubkey)
 
-    if (getString)
-      obj = JSON.parse(getString)
-      info.set(pubkey, obj)
-    if (!obj.payload) {
-      const getLatest = await logs.getLatest(pubkey)
-      if (getLatest) {
-        obj.payload = getLatest.raw
+    if (getString) {
+      try {  
+        obj = JSON.parse(getString)
         info.set(pubkey, obj)
+      } catch (e) {
+        cachekv.rm(pubkey)
       }
     }
     info.set(pubkey, obj)
