@@ -16,7 +16,7 @@ export const composer = async (msg) => {
 
   const id = await avatar(pubkey)
 
-  const select = window.getSelection().toString()
+  //const select = window.getSelection().toString()
 
   const preview = h('div')
 
@@ -25,7 +25,7 @@ export const composer = async (msg) => {
   if (msg) {
     const getReplyPrevious = await getInfo(msg.author)
     //const getReplyPrevious = JSON.parse(await cachekv.get(msg.author))
-    context = '[' + (getReplyPrevious.name || msg.author.substring(0, 7)) + '](' + msg.author + ') ↳ [' + (select || msg.hash.substring(0, 7)) + '](' + msg.hash + ') '
+    context = '[' + (getReplyPrevious.name || msg.author.substring(0, 7)) + '](' + msg.author + ') ↳ [' + (/*select || */msg.hash.substring(0, 7)) + '](' + msg.hash + ') '
     preview.innerHTML = await markdown(context)
   }
 
