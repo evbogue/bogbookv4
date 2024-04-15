@@ -31,7 +31,9 @@ export const avatar = async (id) => {
       await saveInfo(id, latest)
     } if (latest.image.length === 44) {
       const blob = await find(latest.image)
+      if (blob) {
       img.src = blob
+      }
       if (!blob) {
         trystero.send(latest.image)
       }
