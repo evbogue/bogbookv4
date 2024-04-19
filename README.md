@@ -6,12 +6,10 @@ Try it now https://bogbook.com/
 
 The version 4 prototype is now in service and your feedback and pull requests are always welcome. ev@evbogue.com
 
-If you want new post notifications subscribe to https://ntfy.sh/bogbook using your ntfy app of choice.
-
 ### Run Bogbook on your local
 
 ```
-deno run --allow-all --unstable-broadcast-channel --unstable-kv serve.js
+deno run --allow-all --unstable-kv serve.js
 ```
 
 ### The protocol
