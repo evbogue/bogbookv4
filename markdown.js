@@ -1,5 +1,5 @@
 import { h } from './lib/h.js'
-import { find } from './blob.js'
+import { bogbot } from './bogbot.js'
 import { gossip } from './gossip.js'
 
 const renderer = new marked.Renderer()
@@ -44,7 +44,7 @@ renderer.link = function (href, title, text) {
 
 renderer.image = async function (src, unknown, title) {
   if (src.length === 44) {
-    const file = await find(src)
+    const file = await bogbot.find(src)
     if (file) {
       const div = document.getElementById(src)
       div.src = file

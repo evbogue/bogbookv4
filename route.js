@@ -1,6 +1,6 @@
 import { h } from './lib/h.js'
 import { composer } from './composer.js'
-import { logs } from './log.js' 
+import { bogbot } from './bogbot.js' 
 import { adder } from './adder.js'
 import { gossip }  from './gossip.js'
 import { settings } from './settings.js'
@@ -20,17 +20,16 @@ export const route = async (container) => {
 
   if (src === '') {
     scroller.appendChild(await composer())
-    const log = await logs.getLog()
-    adder(log, src, scroller)
   } if (src === 'settings') {
     scroller.appendChild(settings)
-  } else {
-    const query = await logs.query(src)
-    if (query && query.length) {
-      adder(query, src, scroller)
-    } else if (src.length === 44) {
-      gossip(src)
-    }
+  } 
+
+  const query = await bogbot.query(src)
+
+  if (query && query.length) {
+    adder(query, src, scroller)
+  } else if (src.length === 44) {
+    gossip(src)
   }
 
   window.onhashchange = function () {

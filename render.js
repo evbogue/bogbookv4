@@ -1,14 +1,13 @@
 import { h } from './lib/h.js'
 import { human } from './lib/human.js'
 import { avatar } from './avatar.js'
-import { find } from './blob.js'
+import { bogbot } from './bogbot.js'
 import { markdown } from './markdown.js'
 import { composer } from './composer.js'
-import { logs } from './log.js' 
 
 export const render = async (m) => {
   const pubkey = await avatar(m.author)
-  const blob = await find(m.data)
+  const blob = await bogbot.find(m.data)
 
   const content = h('div', {id: m.data})
 
@@ -75,9 +74,9 @@ export const render = async (m) => {
 
   msgDiv.appendChild(replyDiv)
 
-  const threads = await logs.query('?' + m.hash)
+  const threads = await bogbot.query('?' + m.hash)
 
-  if (threads[0]) {
+  if (threads && threads[0]) {
     threads.forEach(async (item) => {
       const getMsg = document.getElementById(item.hash)
       if (!getMsg) {

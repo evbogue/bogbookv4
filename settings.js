@@ -1,15 +1,13 @@
 import { h } from './lib/h.js'
-import { ed25519 } from './keys.js'
 import { cachekv } from './lib/cachekv.js'
-import { find, make } from './blob.js'
-import { getInfo, saveInfo } from './getinfo.js'
+import { bogbot } from './bogbot.js'
 import { decode } from './lib/base64.js'
 import { trystero } from './trystero.js'
 import { vb } from './lib/vb.js'
 
-const keypair = await ed25519.keypair()
-const pubkey = await ed25519.pubkey()
-const latest = await getInfo(pubkey)
+const keypair = await bogbot.keypair()
+const pubkey = await bogbot.pubkey()
+const latest = await bogbot.getInfo(pubkey)
 
 const input = h('input', {placeholder: latest.name || pubkey})
 
@@ -18,7 +16,7 @@ const saveName = h('button', {
     if (input.value) {
       latest.name = input.value
       input.placeholder = input.value
-      await saveInfo(pubkey, latest)
+      await bogbot.saveInfo(pubkey, latest)
       trystero.send(latest)
       const namesOnScreen = document.getElementsByClassName('name' + pubkey)
       for (const names of namesOnScreen) {
@@ -49,7 +47,7 @@ const uploader = h('input', {
       latest.image = blob
       trystero.send(latest)
       trystero.send({type: 'blob', payload: blob})
-      await saveInfo(pubkey, latest)
+      await bogbot.saveInfo(pubkey, latest)
     }
     reader.readAsDataURL(file)
 }})
@@ -68,7 +66,7 @@ const textarea = h('textarea', [keypair])
 const deleteKeypair = h('button', {
   style: 'float: right;',
   onclick: async () => {
-    await ed25519.deletekey()
+    await bogbot.deletekey()
     location.href = '#'
     location.reload()
   }
@@ -78,7 +76,7 @@ const deleteEverything = h('button', {
   style: 'float: right;',
   onclick: async () => {
     await cachekv.clear()
-    await ed25519.deletekey() 
+    await bogbot.deletekey() 
     location.href = '#'
     location.reload()
   }

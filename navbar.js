@@ -1,9 +1,9 @@
 import { h } from './lib/h.js'
-import { ed25519 } from './keys.js'
+import { bogbot } from './bogbot.js'
 import { avatar } from './avatar.js'
 import { search } from './search.js'
 
-const pubkey = await ed25519.pubkey()
+const pubkey = await bogbot.pubkey()
 
 export const navbar = h('navbar' , {id: 'navbar'}, [
   search,

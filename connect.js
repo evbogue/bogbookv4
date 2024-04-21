@@ -1,12 +1,10 @@
 import { process } from './process.js'
-import { ed25519 } from './keys.js'
+import { bogbot } from './bogbot.js'
 import { addSocket, rmSocket} from './gossip.js'
-import { logs } from './log.js'
 import { trystero } from './trystero.js'
-import { getInfo } from './getinfo.js'
 import { h } from './lib/h.js'
 
-const pubkey = await ed25519.pubkey()
+const pubkey = await bogbot.pubkey()
 
 export const connect = (s) => {
   trystero.connect({appId: 'bogbookv4public', password: 'password'})
@@ -17,12 +15,12 @@ export const connect = (s) => {
 
   trystero.join(async (id) => {
     const online = document.getElementById('online')
-    const latest = await getInfo(pubkey)
+    const latest = await bogbot.getInfo(pubkey)
     trystero.send(latest)
     console.log('joined ' + id)
     const contact = h('span', {id})
     online.appendChild(contact)
-    const feeds = await logs.getFeeds()
+    const feeds = await bogbot.getFeeds()
     feeds.forEach(feed => {
       if (feed != pubkey) {
         trystero.send(feed)
@@ -40,11 +38,11 @@ export const connect = (s) => {
   ws.binaryType = 'arraybuffer'
 
   ws.onopen = async () => {
-    const pubkey = await ed25519.pubkey()
+    const pubkey = await bogbot.pubkey()
     addSocket(ws)
     ws.send(pubkey)
 
-    const feeds = await logs.getFeeds()
+    const feeds = await bogbot.getFeeds()
     feeds.forEach(feed => {
       if (feed != pubkey) {
         ws.send(feed)

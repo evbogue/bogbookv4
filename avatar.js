@@ -1,14 +1,10 @@
 import { h } from './lib/h.js'
-import { cachekv } from './lib/cachekv.js'
-import { ed25519 } from './keys.js'
-import { find, make } from './blob.js'
+import { bogbot } from './bogbot.js'
 import { vb } from './lib/vb.js'
 import { decode } from './lib/base64.js'
 import { trystero } from './trystero.js'
-import { getInfo, saveInfo } from './getinfo.js'
 
-
-const pubkey = await ed25519.pubkey()
+const pubkey = await bogbot.pubkey()
 
 export const avatar = async (id) => {
   const img = vb(decode(id), 256)
@@ -17,7 +13,7 @@ export const avatar = async (id) => {
 
   const link = h('a', {href: '#' + id, classList: 'name' + id}, [id.substring(0, 7) + '...'])
 
-  const latest = await getInfo(id)
+  const latest = await bogbot.getInfo(id)
 
   if (latest.name) {
     link.textContent = latest.name
@@ -25,12 +21,12 @@ export const avatar = async (id) => {
 
   if (latest.image) {
     if (latest.image.length > 44) {
-      const blob = await make(latest.image)
+      const blob = await bogbot.make(latest.image)
       img.src = blob
       latest.image = blob
-      await saveInfo(id, latest)
+      await botbot.saveInfo(id, latest)
     } if (latest.image.length === 44) {
-      const blob = await find(latest.image)
+      const blob = await bogbot.find(latest.image)
       if (blob) {
       img.src = blob
       }

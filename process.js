@@ -1,19 +1,15 @@
 import { h } from './lib/h.js'
-import { open } from './sbog.js'
-import { unbox } from './sbox.js'
-import { make, find } from './blob.js'
+import { bogbot } from './bogbot.js'
 import { render } from './render.js'
-import { logs } from './log.js'
 import { markdown } from './markdown.js'
 import { gossip } from './gossip.js'
 import { avatar } from './avatar.js'
-import { getInfo, saveInfo } from './getinfo.js'
 
 export const process = async (msg, id) => {
   const scroller = document.getElementById('scroller')
   if (msg.length === 44 && !msg.startsWith('{')) {
 
-    const get = await find(msg)
+    const get = await bogbot.find(msg)
 
     if (get && get.type && get.type != 'latest') {
       const obj = {type: 'blob', payload: get}
@@ -25,29 +21,29 @@ export const process = async (msg, id) => {
       gossip(get)
     }
 
-    const message = await logs.get(msg)
+    const message = await bogbot.query(msg)
 
-    if (message) {
+    if (message && message[0]) {
       const obj = {
         type: 'post',
-        payload: message.raw
+        payload: message[0].raw
       }
       gossip(obj)
     }
   }
 
   if (msg.type === 'blob') {
-    const hash = await make(msg.payload)
+    const hash = await bogbot.make(msg.payload)
     const blobDiv = document.getElementById(hash)
     if (blobDiv) { blobDiv.innerHTML = await markdown(msg.payload)}
   }
   if ((msg.type === 'post' || msg.type === 'latest') && msg.payload) {
     console.log(msg)
-    const opened = await open(msg.payload)
-    const alreadyHave = await logs.get(opened.hash)
+    const opened = await bogbot.open(msg.payload)
+    const alreadyHave = await bogbot.query(opened.hash)
     
     if (msg.type === 'latest') {
-      const latest = await getInfo(opened.author)
+      const latest = await bogbot.getInfo(opened.author)
 
       if (msg.image || msg.name) {
         if (msg.name) {
@@ -82,7 +78,7 @@ export const process = async (msg, id) => {
         }
       }
       
-      await saveInfo(opened.author, msg)
+      await bogbot.saveInfo(opened.author, msg)
       if (id) {
         const onlineId = document.getElementById(id)
         const newOnlineId = h('span', {id}, [await avatar(opened.author)])
@@ -91,9 +87,9 @@ export const process = async (msg, id) => {
     }
 
     if (!alreadyHave) {
-      logs.add(opened.raw)
+      bogbot.add(opened.raw)
       if (msg.blob) {
-        await make(msg.blob)
+        await bogbot.make(msg.blob)
       }
       if (msg.boxed) {
         opened.text =  '🔒 '
@@ -114,9 +110,9 @@ export const process = async (msg, id) => {
         scroller.insertBefore(rendered, scroller.childNodes[1])
       }
 
-      const previous = await logs.get(opened.previous)
+      const previous = await bogbot.query(opened.previous)
 
-      if (!previous) { gossip(opened.previous)}
+      if (!previous && !previous[0]) { gossip(opened.previous)}
     }
   }
 }

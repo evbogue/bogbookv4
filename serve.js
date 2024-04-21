@@ -1,5 +1,5 @@
 import { serveDir } from 'https://deno.land/std/http/file_server.ts'
-import { open } from './sbog.js'
+import { bogbot } from './bogbot.js'
 
 const sockets = new Set()
 //const channel = new BroadcastChannel("")
@@ -12,7 +12,7 @@ const process = async (e) => {
   if (e.data.length > 44) {
     const msg = JSON.parse(e.data)
     if (msg.type === 'post') {
-      const opened = await open(msg.payload)
+      const opened = await bogbot.open(msg.payload)
       kv.set([opened.hash], opened.raw)
       if (msg.blob) {
         kv.set([opened.data], msg.blob)
@@ -23,7 +23,7 @@ const process = async (e) => {
       kv.set([opened.data], msg.boxed)
     }
     if (msg.type === 'latest') {
-      const opened = await open(msg.payload)
+      const opened = await bogbot.open(msg.payload)
       const obj = msg
       if (msg.image) { delete obj.image }
       kv.set([opened.author], obj)
@@ -42,7 +42,7 @@ const process = async (e) => {
       sockets.forEach(s => s.send(JSON.stringify(msg.value)))
     } else if (msg.value) {
       try {
-        const opened = await open(msg.value)
+        const opened = await bogbot.open(msg.value)
         const blob = await kv.get([opened.data])
         const tosend = {
           type: 'post',
