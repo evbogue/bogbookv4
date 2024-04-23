@@ -116,7 +116,7 @@ const sorter = setInterval(async () => {
       const opened = await bogbot.open(msg)
       const blob = await bogbot.find(opened.data)
       if (blob) {
-        opened.txt = blob
+        opened.text = blob
       }
       newarray.push(opened)
     }

@@ -17,6 +17,11 @@ export const render = async (m) => {
   else if (m.text) { content.innerHTML = await markdown(m.text)}
   else { gossip(m.data) }
 
+  const previous = await bogbot.query(m.previous)
+
+  if (!previous.length) {
+    gossip(m.previous) 
+  }
 
   const ts = h('a', {href: '#' + m.hash }, [human(new Date(m.timestamp))])
 

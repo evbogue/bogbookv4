@@ -4,25 +4,25 @@ import { render } from './render.js'
 import { markdown } from './markdown.js' 
 import { gossip } from './gossip.js'
 
-const doWeHave = async (opened) => {
+const doWeHave = async (msg, opened) => {
   const query = await bogbot.query(opened.hash)
   if (query && query[0]) {
     console.log('WE HAVE THIS ALREADY')
   } else {
     bogbot.add(opened.raw)
-    shouldWeRender(opened)
+    shouldWeRender(msg, opened)
   }
 }
 
-const shouldWeRender = async (opened) => {
+const shouldWeRender = async (msg, opened) => {
   const src = window.location.hash.substring(1)
   if (src == '' || src == opened.hash || src == opened.author) {
     console.log('RENDER IT')
     const rendered = await render(opened)
     const scroller = document.getElementById('scroller')
-    if (src == '') {
+    if (src == '' && msg.type === 'latest') {
       scroller.firstChild.after(rendered)
-    } else if (scroller.firstChild) {
+    } else if (scroller.firstChild && msg.type === 'latest') {
       scroller.firstChild.before(rendered)
     } else { scroller.appendChild(rendered)}
   }
@@ -85,12 +85,12 @@ export const process = async (data, id) => {
     if (msg && msg.text) {
       const blobhash = await bogbot.make(msg.text)
     }
-    await doWeHave(opened)
+    await doWeHave(data, opened)
   } catch (err) {
   }
   try {
     const opened = await bogbot.open(data)
-    await doWeHave(opened) 
+    await doWeHave(data, opened) 
   } catch (err) {
     const hash = await bogbot.make(data)
     const got = document.getElementById(hash)
