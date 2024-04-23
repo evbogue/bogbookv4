@@ -1,5 +1,30 @@
+import nacl from './lib/nacl-fast-es.js'
+import { decode, encode } from './lib/base64.js'
 import { serveDir } from 'https://deno.land/std/http/file_server.ts'
-import { bogbot } from './bogbot.js'
+
+const bogbot = {}
+
+bogbot.open = async (msg) => {
+  const opened = new TextDecoder().decode(nacl.sign.open(decode(msg.substring(44)), decode(msg.substring(0, 44))))
+
+  const obj = {
+    timestamp: parseInt(opened.substring(0, 13)),
+    author: opened.substring(13, 57),
+    data: opened.substring(57, 101),
+    previous: opened.substring(101, 145),
+    hash : opened.substring(145),
+    raw: msg
+  }
+
+  const blob = await bogbot.find(obj.data)
+
+  if (blob) {
+    obj.text = blob
+  }
+
+  return obj
+}
+
 
 const sockets = new Set()
 
