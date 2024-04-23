@@ -2,7 +2,7 @@ import { h } from './lib/h.js'
 import { bogbot } from './bogbot.js'
 import { vb } from './lib/vb.js'
 import { decode } from './lib/base64.js'
-import { trystero } from './trystero.js'
+import { gossip} from './gossip.js'
 
 const pubkey = await bogbot.pubkey()
 
@@ -31,7 +31,7 @@ export const avatar = async (id) => {
       img.src = blob
       }
       if (!blob) {
-        trystero.send(latest.image)
+        gossip(latest.image)
       }
     }
   }

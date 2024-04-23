@@ -35,13 +35,14 @@ export const connect = (s) => {
   })
 
   const ws = new WebSocket(s)
-  ws.binaryType = 'arraybuffer'
+  //ws.binaryType = 'arraybuffer'
 
   ws.onopen = async () => {
-    const pubkey = await bogbot.pubkey()
+    const latest = await bogbot.getInfo(pubkey)
+    console.log(latest)
     addSocket(ws)
     ws.send(pubkey)
-
+    ws.send(JSON.stringify(latest))
     const feeds = await bogbot.getFeeds()
     feeds.forEach(feed => {
       if (feed != pubkey) {
@@ -51,7 +52,7 @@ export const connect = (s) => {
   }
 
   ws.onmessage = async (e) => {
-    await process(JSON.parse(e.data))
+    await process(e.data)
   }
 
   ws.onclose = (e) => {

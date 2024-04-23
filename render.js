@@ -4,16 +4,19 @@ import { avatar } from './avatar.js'
 import { bogbot } from './bogbot.js'
 import { markdown } from './markdown.js'
 import { composer } from './composer.js'
+import { gossip } from './gossip.js'
 
 export const render = async (m) => {
   const pubkey = await avatar(m.author)
+
   const blob = await bogbot.find(m.data)
 
   const content = h('div', {id: m.data})
 
   if (blob) { content.innerHTML = await markdown(blob) }
+  else if (m.text) { content.innerHTML = await markdown(m.text)}
+  else { gossip(m.data) }
 
-  if (m.text) { content.innerHTML = await markdown(m.text)}
 
   const ts = h('a', {href: '#' + m.hash }, [human(new Date(m.timestamp))])
 

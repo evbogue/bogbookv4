@@ -1,118 +1,101 @@
 import { h } from './lib/h.js'
 import { bogbot } from './bogbot.js'
 import { render } from './render.js'
-import { markdown } from './markdown.js'
+import { markdown } from './markdown.js' 
 import { gossip } from './gossip.js'
-import { avatar } from './avatar.js'
 
-export const process = async (msg, id) => {
-  const scroller = document.getElementById('scroller')
-  if (msg.length === 44 && !msg.startsWith('{')) {
+const doWeHave = async (opened) => {
+  const query = await bogbot.query(opened.hash)
+  if (query && query[0]) {
+    console.log('WE HAVE THIS ALREADY')
+  } else {
+    bogbot.add(opened.raw)
+    shouldWeRender(opened)
+  }
+}
 
-    const get = await bogbot.find(msg)
+const shouldWeRender = async (opened) => {
+  const src = window.location.hash.substring(1)
+  if (src == '' || src == opened.hash || src == opened.author) {
+    console.log('RENDER IT')
+    const rendered = await render(opened)
+    const scroller = document.getElementById('scroller')
+    if (src == '') {
+      scroller.firstChild.after(rendered)
+    } else if (scroller.firstChild) {
+      scroller.firstChild.before(rendered)
+    } else { scroller.appendChild(rendered)}
+  }
+}
 
-    if (get && get.type && get.type != 'latest') {
-      const obj = {type: 'blob', payload: get}
-      gossip(obj)
-    } 
+const updateAvatar = async (msg, opened) => {
+  const latest = await bogbot.getInfo(opened.author)
 
-    if (get && get.type && get.type === 'latest') {
-      get.type = 'post'
-      gossip(get)
-    }
+  if (msg.image || msg.name) {
+    if (msg.name) {
+      if (latest.name != msg.name) {
 
-    const message = await bogbot.query(msg)
+        latest.name = msg.name
+        setTimeout(() => {
+          const namesOnScreen = document.getElementsByClassName('name' + opened.author)
+          for (const names of namesOnScreen) {
+            names.textContent = latest.name
+          }
+        }, 100)
 
-    if (message && message[0]) {
-      const obj = {
-        type: 'post',
-        payload: message[0].raw
       }
-      gossip(obj)
+    }
+    if (msg.image) {
+      if (latest.image != msg.image) {
+        latest.image = msg.image
+        setTimeout(async () => {
+          const imagesOnScreen = document.getElementsByClassName('image' + opened.author)
+          for (const image of imagesOnScreen) {
+            if (latest.image.length == 44) {
+              const blob = await find(latest.image)
+              if (blob) {
+                image.src = blob
+              } else { gossip(msg.image)}
+            }
+          }
+        }, 100)
+      }
     }
   }
 
-  if (msg.type === 'blob') {
-    const hash = await bogbot.make(msg.payload)
-    const blobDiv = document.getElementById(hash)
-    if (blobDiv) { blobDiv.innerHTML = await markdown(msg.payload)}
+  await bogbot.saveInfo(opened.author, msg)
+
+}
+
+export const process = async (data, id) => {
+  console.log(data)
+  try {
+    const opened = await bogbot.open(data.payload)
+    if (data.image || data.name) { await updateAvatar(data, opened)}
+    if (data && data.text) {
+      const blobhash = await bogbot.make(data.text)
+    }
+    await doWeHave(opened)
+  } catch (err) {
   }
-  if ((msg.type === 'post' || msg.type === 'latest') && msg.payload) {
-    console.log(msg)
+  try {
+    const msg = JSON.parse(data)
     const opened = await bogbot.open(msg.payload)
-    const alreadyHave = await bogbot.query(opened.hash)
-    
-    if (msg.type === 'latest') {
-      const latest = await bogbot.getInfo(opened.author)
-
-      if (msg.image || msg.name) {
-        if (msg.name) {
-          if (latest.name != msg.name) {
-
-            latest.name = msg.name
-            setTimeout(() => {
-              const namesOnScreen = document.getElementsByClassName('name' + opened.author)
-              for (const names of namesOnScreen) {
-                names.textContent = latest.name
-              }
-            }, 100)
-
-          }
-        }
-        if (msg.image) {
-          if (latest.image != msg.image) {
-            latest.image = msg.image
-            setTimeout(async () => {
-              const imagesOnScreen = document.getElementsByClassName('image' + opened.author)
-              for (const image of imagesOnScreen) {
-                if (latest.image.length > 44) {
-                  image.src = latest.image
-                }
-                if (latest.image.length == 44) {
-                  const blob = await find(latest.image)
-                  image.src = blob
-                }
-              }
-            }, 100)
-          }
-        }
-      }
-      
-      await bogbot.saveInfo(opened.author, msg)
-      if (id) {
-        const onlineId = document.getElementById(id)
-        const newOnlineId = h('span', {id}, [await avatar(opened.author)])
-        onlineId.replaceWith(newOnlineId)
-      }
+    if (msg.image || msg.name) { await updateAvatar(msg, opened)}
+    if (msg && msg.text) {
+      const blobhash = await bogbot.make(msg.text)
     }
-
-    if (!alreadyHave) {
-      bogbot.add(opened.raw)
-      if (msg.blob) {
-        await bogbot.make(msg.blob)
-      }
-      if (msg.boxed) {
-        opened.text =  '🔒 '
-        opened.text = opened.text + (await unbox(msg.boxed) || '')
-      } else {
-        opened.text = msg.blob
-      }
-
-      const rendered = await render(opened)
-
-      const alreadyRendered = document.getElementById(opened.hash)
-
-      const src = window.location.hash.substring(1)
-
-      const shouldWeRender = (src === opened.author || src === opened.hash || src === '')
-
-      if (!scroller.firstChild && shouldWeRender && !alreadyRendered || !alreadyHave && shouldWeRender) {
-        scroller.insertBefore(rendered, scroller.childNodes[1])
-      }
-
-      const previous = await bogbot.query(opened.previous)
-
-      if (!previous && !previous[0]) { gossip(opened.previous)}
+    await doWeHave(opened)
+  } catch (err) {
+  }
+  try {
+    const opened = await bogbot.open(data)
+    await doWeHave(opened) 
+  } catch (err) {
+    const hash = await bogbot.make(data)
+    const got = document.getElementById(hash)
+    if (got) {
+      got.innerHTML = await markdown(data)
     }
   }
 }

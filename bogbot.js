@@ -86,7 +86,7 @@ bogbot.open = async (msg) => {
   const blob = await bogbot.find(obj.data)
 
   if (blob) {
-    obj.txt = blob
+    obj.text = blob
   }
 
   return obj

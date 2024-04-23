@@ -11,6 +11,8 @@ setInterval(() => {
 const sockets = new Set()
 
 export const gossip = async (msg) => {
+  console.log('GOSSIP')
+  console.log(msg)
   if (!tq.includes(msg)) {
     if (trystero.send) {
       trystero.send(msg)

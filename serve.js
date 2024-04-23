@@ -2,61 +2,43 @@ import { serveDir } from 'https://deno.land/std/http/file_server.ts'
 import { bogbot } from './bogbot.js'
 
 const sockets = new Set()
-//const channel = new BroadcastChannel("")
 
 const kv = await Deno.openKv()
 
-const process = async (e) => {
-  console.log(e.data)
-  //(e.target != channel) && channel.postMessage(e.data)
-  if (e.data.length > 44) {
-    const msg = JSON.parse(e.data)
-    if (msg.type === 'post') {
-      const opened = await bogbot.open(msg.payload)
-      kv.set([opened.hash], opened.raw)
-      if (msg.blob) {
-        kv.set([opened.data], msg.blob)
-        opened.text = msg.blob
-      }
-    }
-    if (msg.boxed) {
-      kv.set([opened.data], msg.boxed)
-    }
+const process = async (m) => {
+  console.log(m.data)
+  try {
+    const msg = JSON.parse(m.data)
+    const opened = await bogbot.open(msg.payload)
     if (msg.type === 'latest') {
-      const opened = await bogbot.open(msg.payload)
-      const obj = msg
-      if (msg.image) { delete obj.image }
-      kv.set([opened.author], obj)
-      kv.set([opened.hash], opened.raw)
-      if (msg.blob) {
-        kv.set([opened.data], msg.blob)
-        opened.text = msg.blob
+      const latest = await kv.get([opened.author])
+      if (latest.value.payload != msg.payload) {
+        const body = 'New post from ' + (msg.name || opened.author.substring(0, 5)) +' https://bogbook.com/#' + opened.author
+        await fetch('https://ntfy.sh/bogbook', {
+          method: 'POST',
+          body
+        })
+        await kv.set([opened.author], msg)
+        await kv.set([opened.hash], opened.raw)
       }
     }
-    sockets.forEach(s => s.send(e.data))
-  } 
-  if (e.data.length === 44) {
-    const msg = await kv.get([e.data])
-    if (msg.value && msg.value.type === 'latest') {
-      msg.value.type = 'post'
-      sockets.forEach(s => s.send(JSON.stringify(msg.value)))
-    } else if (msg.value) {
-      try {
-        const opened = await bogbot.open(msg.value)
-        const blob = await kv.get([opened.data])
-        const tosend = {
-          type: 'post',
-          payload: msg.value,
-        }
-        sockets.forEach(s => s.send(JSON.stringify(tosend)))
-      } catch {
-        const tosend = {
-          type: 'blob',
-          payload: msg.value
-        }
-        sockets.forEach(s => s.send(JSON.stringify(tosend)))
-      }
+    if (msg.text) {
+      const blobhash = await bogbot.make(msg.text)
+      await kv.set([blobhash], msg.text)
     }
+  } catch (err) {}
+  if (m.data.length === 44) {
+    try {
+      const msg = await kv.get([m.data])
+      if (typeof msg.value === 'object') {
+        if (msg.value) {
+          const string = JSON.stringify(msg.value)
+          m.target.send(string)
+        }
+      } else {
+        m.target.send(msg.value)
+      }
+    } catch (err) {}
   }
 }
 
@@ -64,7 +46,7 @@ Deno.serve((r) => {
   try {
     const { socket, response } = Deno.upgradeWebSocket(r)
     sockets.add(socket)
-    socket.onmessage = process 
+    socket.onmessage = process
     socket.onclose = _ => sockets.delete(socket)
     return response
   } catch {

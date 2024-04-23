@@ -65,7 +65,7 @@ export const composer = async (msg) => {
       const blob = await bogbot.find(opened.data)
       latest.type = 'latest'
       latest.payload = signed
-      latest.blob = blob
+      latest.text = blob
       bogbot.add(signed)
       gossip(latest)
       opened.text = blob
