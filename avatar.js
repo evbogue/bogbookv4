@@ -24,7 +24,7 @@ export const avatar = async (id) => {
       const blob = await bogbot.make(latest.image)
       img.src = blob
       latest.image = blob
-      await botbot.saveInfo(id, latest)
+      await bogbot.saveInfo(id, latest)
     } if (latest.image.length === 44) {
       const blob = await bogbot.find(latest.image)
       if (blob) {
