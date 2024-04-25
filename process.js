@@ -98,4 +98,15 @@ export const process = async (data, id) => {
       got.innerHTML = await markdown(data)
     }
   }
+  if (data.length === 44) {
+    const query = await bogbot.query(data)
+    const blob = await bogbot.find(data)
+    if (query && query[0]) {
+      gossip(query[0].raw)
+    }
+    if (blob) {
+      gossip(blob)
+    }
+    console.log(query)
+  }
 }
