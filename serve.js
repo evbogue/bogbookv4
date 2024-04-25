@@ -16,12 +16,6 @@ bogbot.open = async (msg) => {
     raw: msg
   }
 
-  const blob = await bogbot.find(obj.data)
-
-  if (blob) {
-    obj.text = blob
-  }
-
   return obj
 }
 
@@ -33,11 +27,27 @@ const kv = await Deno.openKv()
 const process = async (m) => {
   console.log(m.data)
   try {
-    const msg = JSON.parse(m.data)
+    const msg = await JSON.parse(m.data)
+    console.log(msg)
     const opened = await bogbot.open(msg.payload)
-    if (msg.type === 'latest') {
+    console.log(opened)
+    if (msg && msg.type == 'latest') {
+      console.log('LATEST')
       const latest = await kv.get([opened.author])
-      if (latest.value.payload != msg.payload) {
+      console.log(msg)
+      console.log(latest)
+      if (latest.value === null) {
+        console.log('FIRST MESSAGE MAYBE')
+        const body = 'New post from ' + (msg.name || opened.author.substring(0, 5)) +' https://bogbook.com/#' + opened.author
+        await fetch('https://ntfy.sh/bogbook', {
+          method: 'POST',
+          body
+        })
+        await kv.set([opened.author], msg)
+        await kv.set([opened.hash], opened.raw)
+      }
+      else if (latest.value.payload != msg.payload) {
+        console.log('SAVE LATEST')
         const body = 'New post from ' + (msg.name || opened.author.substring(0, 5)) +' https://bogbook.com/#' + opened.author
         await fetch('https://ntfy.sh/bogbook', {
           method: 'POST',
@@ -51,10 +61,12 @@ const process = async (m) => {
       const blobhash = await bogbot.make(msg.text)
       await kv.set([blobhash], msg.text)
     }
-  } catch (err) {}
+  } catch (err) { }
   if (m.data.length === 44) {
+    console.log('FIND IT')
     try {
       const msg = await kv.get([m.data])
+      console.log(msg)
       if (typeof msg.value === 'object') {
         if (msg.value) {
           const string = JSON.stringify(msg.value)
