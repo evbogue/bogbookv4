@@ -19,7 +19,7 @@ export const render = async (m) => {
 
   const previous = await bogbot.query(m.previous)
 
-  if (!previous.length) {
+  if (previous && !previous.length) {
     gossip(m.previous) 
   }
 
