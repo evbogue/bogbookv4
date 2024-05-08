@@ -7,7 +7,7 @@ import { gossip } from './gossip.js'
 const doWeHave = async (msg, opened) => {
   const query = await bogbot.query(opened.hash)
   if (query && query[0]) {
-    console.log('WE HAVE THIS ALREADY')
+    //console.log('WE HAVE THIS ALREADY')
   } else {
     bogbot.add(opened.raw)
     shouldWeRender(msg, opened)
@@ -17,14 +17,9 @@ const doWeHave = async (msg, opened) => {
 const shouldWeRender = async (msg, opened) => {
   const src = window.location.hash.substring(1)
   if (src == '' || src == opened.hash || src == opened.author) {
-    console.log('RENDER IT')
     const rendered = await render(opened)
     const scroller = document.getElementById('scroller')
-    if (src == '' && msg.type === 'latest') {
-      scroller.firstChild.after(rendered)
-    } else if (scroller.firstChild && msg.type === 'latest') {
-      scroller.firstChild.before(rendered)
-    } else { scroller.appendChild(rendered)}
+    scroller.firstChild.after(rendered)
   }
 }
 

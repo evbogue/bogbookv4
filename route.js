@@ -9,6 +9,9 @@ export const route = async (container) => {
   const screen = h('div', {id: 'screen'})
   const scroller = h('div', {id: 'scroller'})
 
+  const controls = h('div', {id: 'controls'})
+
+  scroller.appendChild(controls)
   container.appendChild(screen)
   screen.appendChild(scroller)
 
@@ -19,7 +22,7 @@ export const route = async (container) => {
   }
 
   if (src === '') {
-    scroller.appendChild(await composer())
+    controls.appendChild(await composer())
   } if (src === 'settings') {
     scroller.appendChild(settings)
   } 
