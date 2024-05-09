@@ -1,6 +1,7 @@
 import { h } from './lib/h.js'
 import { bogbot } from './bogbot.js'
 import { gossip } from './gossip.js'
+import { marked } from './lib/marked.esm.js'
 
 const renderer = new marked.Renderer()
 
