@@ -25,6 +25,8 @@ const sockets = new Set()
 const kv = await Deno.openKv()
 
 const process = async (m) => {
+  console.log('received something')
+  console.log(m)
   console.log(m.data)
   try {
     const msg = await JSON.parse(m.data)
@@ -71,11 +73,16 @@ const process = async (m) => {
         if (msg.value) {
           const string = JSON.stringify(msg.value)
           m.target.send(string)
-        }
+        } else { 
+          console.log('SENDING HASH ' + m.data)
+          m.target.send(m.data) }
       } else {
+        console.log('SENDING VALUE ' + m.value)
         m.target.send(msg.value)
       }
-    } catch (err) {}
+    } catch (err) {
+      //console.log(err)
+    }
   }
 }
 
