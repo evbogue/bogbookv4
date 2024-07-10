@@ -14,12 +14,9 @@ export const connect = (s) => {
   })
 
   trystero.join(async (id) => {
-    const online = document.getElementById('online')
     const latest = await bogbot.getInfo(pubkey)
     trystero.send(latest)
     console.log('joined ' + id)
-    const contact = h('span', {id})
-    online.appendChild(contact)
     const feeds = await bogbot.getFeeds()
     feeds.forEach(feed => {
       if (feed != pubkey) {
