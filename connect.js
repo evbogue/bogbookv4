@@ -26,8 +26,6 @@ export const connect = (s) => {
   })
 
   trystero.leave(id => {
-    const got = document.getElementById(id)
-    got.remove()
     console.log('left ' + id)
   })
 
