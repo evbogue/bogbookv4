@@ -125,6 +125,7 @@ const sorter = setInterval(async () => {
     arraystore = newarray
     await save()
     newData = false
+    console.log(newarray)
     console.log(newData)
   } 
 }, 10000)
@@ -133,7 +134,7 @@ bogbot.query = async (query) => {
   if (arraystore[0] && !query) { return arraystore }
   if (arraystore[0] && query.startsWith('?')) {
     const search = query.substring(1).replace(/%20/g, ' ').toUpperCase()
-    const result = arraystore.filter(msg => msg.txt && msg.txt.toUpperCase().includes(search))
+    const result = arraystore.filter(msg => msg.text && msg.text.toUpperCase().includes(search))
     return result  
   } else if (arraystore[0]) {
     const result = arraystore.filter(msg => msg.author == query || msg.hash == query)
