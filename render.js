@@ -6,16 +6,34 @@ import { markdown } from './markdown.js'
 import { composer } from './composer.js'
 import { gossip } from './gossip.js'
 
-const populate = async (m, msgDiv) => {
-  const pubkey = await avatar(m.author)
-
+const getContent = async (m, content) => {
   const blob = await bogbot.find(m.data)
-
-  const content = h('div', {id: m.data})
 
   if (blob) { content.innerHTML = await markdown(blob) }
   else if (m.text) { content.innerHTML = await markdown(m.text)}
   else { gossip(m.data) }
+}
+
+const getThreads = async (m, replyDiv) => {
+  const threads = await bogbot.query('?' + m.hash)
+
+  if (threads && threads[0]) {
+    threads.forEach(async (item) => {
+      const getMsg = document.getElementById(item.hash)
+      if (!getMsg) {
+        const rendered = await render(item)
+        replyDiv.appendChild(rendered)
+      }
+    })
+  }
+}
+
+const populate = async (m, msgDiv) => {
+  const pubkey = await avatar(m.author)
+
+  const content = h('div', {id: m.data})
+
+  getContent(m, content)
 
   const previous = await bogbot.query(m.previous)
 
@@ -82,17 +100,7 @@ const populate = async (m, msgDiv) => {
 
   msgDiv.appendChild(replyDiv)
 
-  const threads = await bogbot.query('?' + m.hash)
-
-  if (threads && threads[0]) {
-    threads.forEach(async (item) => {
-      const getMsg = document.getElementById(item.hash)
-      if (!getMsg) {
-        const rendered = await render(item)
-        replyDiv.appendChild(rendered)
-      }
-    })
-  }
+  getThreads(m, replyDiv)
 }
 
 export const render = (m) => {
