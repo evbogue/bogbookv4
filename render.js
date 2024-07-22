@@ -6,7 +6,7 @@ import { markdown } from './markdown.js'
 import { composer } from './composer.js'
 import { gossip } from './gossip.js'
 
-export const render = async (m) => {
+const populate = async (m, msgDiv) => {
   const pubkey = await avatar(m.author)
 
   const blob = await bogbot.find(m.data)
@@ -76,7 +76,7 @@ export const render = async (m) => {
     reply
   ])
 
-  const msgDiv = h('div', [div])
+  msgDiv.appendChild(div)
 
   const replyDiv = h('div', {classList: 'indent'})
 
@@ -93,6 +93,10 @@ export const render = async (m) => {
       }
     })
   }
+}
 
+export const render = (m) => {
+  const msgDiv = h('div')
+  populate(m, msgDiv)
   return msgDiv
 }
