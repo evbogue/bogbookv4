@@ -36,7 +36,6 @@ export const connect = (s) => {
 
   ws.onopen = async () => {
     const latest = await bogbot.getInfo(pubkey)
-    console.log(latest)
     addSocket(ws)
     ws.send(pubkey)
     ws.send(JSON.stringify(latest))

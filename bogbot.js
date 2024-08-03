@@ -105,8 +105,6 @@ if (file) {
 
 const sorter = setInterval(async () => {
   if (newData) {
-    console.log(newData)
-    console.log('sorting')
     const rawset = new Set()
     for await (const msg of arraystore) {
       rawset.add(msg.raw) 
@@ -125,8 +123,6 @@ const sorter = setInterval(async () => {
     arraystore = newarray
     await save()
     newData = false
-    console.log(newarray)
-    console.log(newData)
   } 
 }, 10000)
 

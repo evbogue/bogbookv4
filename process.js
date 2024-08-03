@@ -7,7 +7,6 @@ import { gossip } from './gossip.js'
 const doWeHave = async (msg, opened) => {
   const query = await bogbot.query(opened.hash)
   if (query && query[0]) {
-    //console.log('WE HAVE THIS ALREADY')
   } else {
     bogbot.add(opened.raw)
     shouldWeRender(msg, opened)
@@ -63,7 +62,6 @@ const updateAvatar = async (msg, opened) => {
 }
 
 export const process = async (data, id) => {
-  console.log(data)
   try {
     const opened = await bogbot.open(data.payload)
     if (data.image || data.name) { await updateAvatar(data, opened)}
@@ -102,6 +100,5 @@ export const process = async (data, id) => {
     if (blob) {
       gossip(blob)
     }
-    console.log(query)
   }
 }
