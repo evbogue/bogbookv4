@@ -9,7 +9,7 @@ The version 4 prototype is now in service and your feedback and pull requests ar
 ### Run Bogbook on your local
 
 ```
-deno run --allow-all --unstable-kv serve.js
+deno task start
 ```
 
 ### The protocol
