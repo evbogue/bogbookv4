@@ -1,34 +1,36 @@
 import { process } from './process.js'
 import { bogbot } from './bogbot.js'
 import { addSocket, rmSocket} from './gossip.js'
-import { trystero } from './trystero.js'
+import { joinRoom } from './lib/trystero-torrent.min.js'
 import { h } from './lib/h.js'
 
 const pubkey = await bogbot.pubkey()
 
-export const connect = (s) => {
-  trystero.connect({appId: 'bogbookv4public', password: 'password'})
+const room = joinRoom({appId: 'bogbookv4public', password: 'password'}, 'trystero')
 
-  trystero.onmessage(async (data, id) => {
-    await process(data, id)
-  })
+export const [ send, onmessage ] = room.makeAction('message')
 
-  trystero.join(async (id) => {
+onmessage(async (data, id) => {
+  await process(data, id)
+})
+
+room.onPeerJoin(async (id) => {
     const latest = await bogbot.getInfo(pubkey)
-    trystero.send(latest)
+    send(latest)
     console.log('joined ' + id)
     const feeds = await bogbot.getFeeds()
     feeds.forEach(feed => {
       if (feed != pubkey) {
-        trystero.send(feed)
+        send(feed)
       }
     })
   })
 
-  trystero.leave(id => {
-    console.log('left ' + id)
-  })
+room.onPeerLeave(id => {
+  console.log('left ' + id)
+})
 
+export const connect = (s) => {
   const ws = new WebSocket(s)
   //ws.binaryType = 'arraybuffer'
 

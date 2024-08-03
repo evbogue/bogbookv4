@@ -1,4 +1,4 @@
-import { trystero } from './trystero.js'
+import { send } from './connect.js'
 
 let wq = []
 let tq = []
@@ -11,17 +11,15 @@ setInterval(() => {
 const sockets = new Set()
 
 export const gossip = async (msg) => {
-  console.log('GOSSIP')
-  console.log(msg)
   if (!tq.includes(msg)) {
-    if (trystero.send) {
-      trystero.send(msg)
+    if (send) {
+      send(msg)
       tq.push(msg)
     } else {
       setTimeout(() => {
-        trystero.send(msg)
+        send(msg)
         tq.push(msg)
-      }, 1000)
+      }, 5000)
     }
   }
   if (!wq.includes(msg)) {
