@@ -23,7 +23,15 @@ room.onPeerJoin(async (id) => {
       if (feed != pubkey) {
         send(feed)
       }
-    })
+    }) 
+    const log = await bogbot.query()
+    console.log(log)
+    for (const msg of log) {
+      if (!msg.text) { 
+        console.log('We do not have ' + msg.data)
+        send(msg.data)
+      }
+    }
   })
 
 room.onPeerLeave(id => {
