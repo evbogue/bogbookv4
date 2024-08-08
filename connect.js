@@ -16,12 +16,12 @@ onmessage(async (data, id) => {
 
 room.onPeerJoin(async (id) => {
     const latest = await bogbot.getInfo(pubkey)
-    send(latest)
+    send(latest, id)
     console.log('joined ' + id)
     const feeds = await bogbot.getFeeds()
     feeds.forEach(feed => {
       if (feed != pubkey) {
-        send(feed)
+        send(feed, id)
       }
     }) 
     const log = await bogbot.query()
@@ -29,7 +29,7 @@ room.onPeerJoin(async (id) => {
     for (const msg of log) {
       if (!msg.text) { 
         console.log('We do not have ' + msg.data)
-        send(msg.data)
+        send(msg.data, id)
       }
     }
   })
