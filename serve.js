@@ -24,6 +24,8 @@ const sockets = new Set()
 
 const kv = await Deno.openKv()
 
+
+
 const process = async (m) => {
   try {
     const msg = await JSON.parse(m.data)
@@ -31,7 +33,7 @@ const process = async (m) => {
     if (msg && msg.type == 'latest') {
       const latest = await kv.get([opened.author])
       if (latest.value === null) {
-        const body = 'New post from ' + (msg.name || opened.author.substring(0, 5)) +' https://bogbook.com/#' + opened.author
+        const body = 'New post from ' + (msg.name || opened.author.substring(0, 5)) +' https://bogbook.com/#' + opened.hash
         await fetch('https://ntfy.sh/bogbook', {
           method: 'POST',
           body
@@ -40,7 +42,7 @@ const process = async (m) => {
         await kv.set([opened.hash], opened.raw)
       }
       else if (latest.value.payload != msg.payload) {
-        const body = 'New post from ' + (msg.name || opened.author.substring(0, 5)) +' https://bogbook.com/#' + opened.author
+        const body = 'New post from ' + (msg.name || opened.author.substring(0, 5)) +' https://bogbook.com/#' + opened.hash
         await fetch('https://ntfy.sh/bogbook', {
           method: 'POST',
           body
@@ -53,9 +55,15 @@ const process = async (m) => {
       const blobhash = await bogbot.make(msg.text)
       await kv.set([blobhash], msg.text)
     }
-  } catch (err) { }
+  } catch (err) { console.log('NOT JSON') }
+  try { 
+    const opened = await bogbot.open(m.data)
+    await kv.set([opened.hash], opened.raw)
+  } catch (err) {
+  }
   if (m.data.length === 44) {
     try {
+      console.log('checking db')
       const msg = await kv.get([m.data])
       if (typeof msg.value === 'object') {
         if (msg.value) {
@@ -69,6 +77,9 @@ const process = async (m) => {
     } catch (err) {}
   }
 }
+
+const allEntries = await Array.fromAsync(kv.list({prefix:[]}));
+console.log(allEntries) 
 
 Deno.serve((r) => {
   try {
