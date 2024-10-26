@@ -23,9 +23,21 @@ export const gossip = async (msg) => {
     }
   }
   if (!wq.includes(msg)) {
+    console.log('Servering: ')
+    console.log(msg)
     let mssg = '' 
-    if (msg.length === 44 && !msg.startsWith('{')) { mssg = msg} 
-    if (typeof msg === 'object') { mssg = await JSON.stringify(msg)}
+    if (msg.length === 44 && !msg.startsWith('{')) {
+      console.log('its a hash') 
+      mssg = msg
+    } 
+    if (typeof msg === 'object') {
+      console.log('its an object') 
+      mssg = await JSON.stringify(msg)
+    }
+    else {
+      console.log('its a blob')
+      mssg = msg
+    }
     if (sockets.length) {
       sockets.forEach(s => s.send(mssg)) 
       wq.push(mssg)
@@ -33,7 +45,7 @@ export const gossip = async (msg) => {
       setTimeout(() => { 
         sockets.forEach(s => s.send(mssg))
         tq.push(mssg)
-      }, 1000)
+      }, 5000)
     }
   }
 }

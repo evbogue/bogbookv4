@@ -15,8 +15,10 @@ bogbot.keypair = async () => {
   if (!keypair) {
     const keypair = await generate()
     await localStorage.setItem('keypair', keypair)
+    if (location) {
     location.reload()
-    //return keypair
+    }
+    return keypair
   } else {
     return keypair
   }
