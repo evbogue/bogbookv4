@@ -150,11 +150,13 @@ bogbot.getLatest = async (query) => {
 bogbot.getFeeds = async () => {
   const feeds = []
 
-  arraystore.map(msg => {
-    if (!feeds.includes(msg.author)) {
-      feeds.push(msg.author)
-    }
-  })
+  if (arraystore && arraystore.length) {
+    arraystore.map(msg => {
+      if (!feeds.includes(msg.author)) {
+        feeds.push(msg.author)
+      }
+    })
+  }
 
   return feeds
 }
