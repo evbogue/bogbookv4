@@ -4,7 +4,7 @@ import { cachekv } from './lib/cachekv.js'
 
 export const bogbot = {}
 
-const generate = async () => {
+bogbot.generate = async () => {
   const genkey = nacl.sign.keyPair()
   const keygen = encode(genkey.publicKey) + encode(genkey.secretKey)
   return keygen
@@ -13,11 +13,8 @@ const generate = async () => {
 bogbot.keypair = async () => {
   const keypair = await localStorage.getItem('keypair')
   if (!keypair) {
-    const keypair = await generate()
+    const keypair = await bogbot.generate()
     await localStorage.setItem('keypair', keypair)
-    if (location) {
-    location.reload()
-    }
     return keypair
   } else {
     return keypair
@@ -55,17 +52,11 @@ bogbot.publish = async (text) => {
     )
   )
 
-  let previous
-
   const getLatest = await bogbot.getLatest(pubkey)
 
-  previous = hash
+  let previous = hash
 
-  if (getLatest) {
-    previous = getLatest.hash
-  } else {
-    previous = hash
-  }
+  if (getLatest) { previous = getLatest.hash }
 
   const next = msg + previous + hash
 
@@ -152,13 +143,11 @@ bogbot.getLatest = async (query) => {
 bogbot.getFeeds = async () => {
   const feeds = []
 
-  if (arraystore && arraystore.length) {
-    arraystore.map(msg => {
-      if (!feeds.includes(msg.author)) {
-        feeds.push(msg.author)
-      }
-    })
-  }
+  arraystore.map(msg => {
+    if (!feeds.includes(msg.author)) {
+      feeds.push(msg.author)
+    }
+  })
 
   return feeds
 }
