@@ -18,7 +18,7 @@ renderer.paragraph = function (paragraph) {
         word = word.substring(0, word.length - 1)
       }
 
-      const hashtag = "<a href='#?" + word + "'>" + word + "</a>"
+      let hashtag = "<a href='#?" + word + "'>" + word + "</a>"
 
       if (end) {
         hashtag = hashtag + end
